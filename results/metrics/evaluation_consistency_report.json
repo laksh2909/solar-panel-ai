@@ -1,0 +1,375 @@
+{
+  "summary": {
+    "title": "Phase 7A Evaluation Consistency Report",
+    "checkpoint_evaluated": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\models\\checkpoints\\efficientnet_b0_baseline_best.pth",
+    "checkpoint_sha256": "07890dc9964f5162b53ed4c80778ef147c01b977e8bce76d0a15b09c4733fa1e",
+    "total_test_images": 177,
+    "matching_filenames": 177,
+    "class_mapping": {
+      "Bird-drop": 0,
+      "Clean": 1,
+      "Dusty": 2,
+      "Electrical-damage": 3,
+      "Physical-damage": 4,
+      "Snow-Covered": 5
+    },
+    "identical_predictions_count": 163,
+    "differing_predictions_count": 14,
+    "canonical_phase4_accuracy": 0.8531,
+    "canonical_phase4_macro_f1": 0.8493,
+    "phase6_original_accuracy": 0.8362,
+    "phase6_original_macro_f1": 0.8235,
+    "root_cause": "Image resizing interpolation mismatch: OpenCV bilinear (cv2.INTER_LINEAR via Albumentations) in Phase 4 vs. PIL bicubic (Image.Resampling.BICUBIC) in Phase 6 evaluator.",
+    "canonical_pipeline_recommendation": "The Phase 4 pipeline (load_image_rgb + Albumentations A.Resize / OpenCV bilinear) is the canonical evaluation pipeline because the model was trained on these exact representations."
+  },
+  "canonical_metrics": {
+    "accuracy": 0.8531,
+    "macro_f1": 0.8493,
+    "macro_precision": 0.8734,
+    "macro_recall": 0.8357,
+    "correct_count": 151,
+    "total_count": 177,
+    "confusion_matrix": [
+      [
+        35,
+        0,
+        4,
+        1,
+        1,
+        0
+      ],
+      [
+        1,
+        35,
+        2,
+        1,
+        0,
+        0
+      ],
+      [
+        4,
+        3,
+        30,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        20,
+        0,
+        0
+      ],
+      [
+        3,
+        1,
+        1,
+        0,
+        8,
+        0
+      ],
+      [
+        2,
+        1,
+        0,
+        0,
+        0,
+        23
+      ]
+    ]
+  },
+  "phase6_original_metrics": {
+    "accuracy": 0.8362,
+    "macro_f1": 0.8235,
+    "macro_precision": 0.8563,
+    "macro_recall": 0.8085,
+    "correct_count": 148,
+    "total_count": 177,
+    "confusion_matrix": [
+      [
+        35,
+        1,
+        4,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        37,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        3,
+        7,
+        27,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        1,
+        18,
+        1,
+        0
+      ],
+      [
+        3,
+        2,
+        0,
+        0,
+        7,
+        1
+      ],
+      [
+        2,
+        0,
+        0,
+        0,
+        0,
+        24
+      ]
+    ]
+  },
+  "differing_predictions_audit": [
+    {
+      "filename": "Bird (14).JPG",
+      "true_class": "Bird-drop",
+      "canonical_pred": "Physical-damage",
+      "canonical_conf": 0.2832,
+      "canonical_correct": false,
+      "p6_original_pred": "Bird-drop",
+      "p6_original_conf": 0.2961,
+      "p6_original_correct": true
+    },
+    {
+      "filename": "Bird (63).jpg",
+      "true_class": "Bird-drop",
+      "canonical_pred": "Bird-drop",
+      "canonical_conf": 0.6021,
+      "canonical_correct": true,
+      "p6_original_pred": "Clean",
+      "p6_original_conf": 0.3963,
+      "p6_original_correct": false
+    },
+    {
+      "filename": "Clean (102).jpg",
+      "true_class": "Clean",
+      "canonical_pred": "Dusty",
+      "canonical_conf": 0.5654,
+      "canonical_correct": false,
+      "p6_original_pred": "Clean",
+      "p6_original_conf": 0.9744,
+      "p6_original_correct": true
+    },
+    {
+      "filename": "Clean (94).jpg",
+      "true_class": "Clean",
+      "canonical_pred": "Bird-drop",
+      "canonical_conf": 0.6117,
+      "canonical_correct": false,
+      "p6_original_pred": "Clean",
+      "p6_original_conf": 0.5697,
+      "p6_original_correct": true
+    },
+    {
+      "filename": "Dust (115).jpg",
+      "true_class": "Dusty",
+      "canonical_pred": "Dusty",
+      "canonical_conf": 0.678,
+      "canonical_correct": true,
+      "p6_original_pred": "Clean",
+      "p6_original_conf": 0.4533,
+      "p6_original_correct": false
+    },
+    {
+      "filename": "Dust (134).jpg",
+      "true_class": "Dusty",
+      "canonical_pred": "Dusty",
+      "canonical_conf": 0.6048,
+      "canonical_correct": true,
+      "p6_original_pred": "Clean",
+      "p6_original_conf": 0.5004,
+      "p6_original_correct": false
+    },
+    {
+      "filename": "Dust (148).jpg",
+      "true_class": "Dusty",
+      "canonical_pred": "Dusty",
+      "canonical_conf": 0.954,
+      "canonical_correct": true,
+      "p6_original_pred": "Clean",
+      "p6_original_conf": 0.6228,
+      "p6_original_correct": false
+    },
+    {
+      "filename": "Dust (155).jpg",
+      "true_class": "Dusty",
+      "canonical_pred": "Dusty",
+      "canonical_conf": 0.6924,
+      "canonical_correct": true,
+      "p6_original_pred": "Clean",
+      "p6_original_conf": 0.8678,
+      "p6_original_correct": false
+    },
+    {
+      "filename": "Dust (178).jpg",
+      "true_class": "Dusty",
+      "canonical_pred": "Bird-drop",
+      "canonical_conf": 0.3479,
+      "canonical_correct": false,
+      "p6_original_pred": "Dusty",
+      "p6_original_conf": 0.2979,
+      "p6_original_correct": true
+    },
+    {
+      "filename": "Electrical (6).jpg",
+      "true_class": "Electrical-damage",
+      "canonical_pred": "Electrical-damage",
+      "canonical_conf": 0.3506,
+      "canonical_correct": true,
+      "p6_original_pred": "Physical-damage",
+      "p6_original_conf": 0.3797,
+      "p6_original_correct": false
+    },
+    {
+      "filename": "Electrical (70).jpg",
+      "true_class": "Electrical-damage",
+      "canonical_pred": "Electrical-damage",
+      "canonical_conf": 0.9026,
+      "canonical_correct": true,
+      "p6_original_pred": "Dusty",
+      "p6_original_conf": 0.4308,
+      "p6_original_correct": false
+    },
+    {
+      "filename": "Physical (19).jpg",
+      "true_class": "Physical-damage",
+      "canonical_pred": "Physical-damage",
+      "canonical_conf": 0.3017,
+      "canonical_correct": true,
+      "p6_original_pred": "Snow-Covered",
+      "p6_original_conf": 0.3215,
+      "p6_original_correct": false
+    },
+    {
+      "filename": "Physical (9).jpg",
+      "true_class": "Physical-damage",
+      "canonical_pred": "Dusty",
+      "canonical_conf": 0.2731,
+      "canonical_correct": false,
+      "p6_original_pred": "Clean",
+      "p6_original_conf": 0.2993,
+      "p6_original_correct": false
+    },
+    {
+      "filename": "Snow (83).jpg",
+      "true_class": "Snow-Covered",
+      "canonical_pred": "Clean",
+      "canonical_conf": 0.7041,
+      "canonical_correct": false,
+      "p6_original_pred": "Snow-Covered",
+      "p6_original_conf": 0.7645,
+      "p6_original_correct": true
+    }
+  ],
+  "sixteen_point_investigation": {
+    "1_checkpoint_phase4": {
+      "path": "models/checkpoints/efficientnet_b0_baseline_best.pth",
+      "sha256": "07890dc9964f5162b53ed4c80778ef147c01b977e8bce76d0a15b09c4733fa1e",
+      "epoch": 7,
+      "val_acc": 0.8,
+      "val_f1": 0.801121290194636
+    },
+    "2_checkpoint_phase6": {
+      "path": "models/checkpoints/efficientnet_b0_baseline_best.pth",
+      "sha256": "07890dc9964f5162b53ed4c80778ef147c01b977e8bce76d0a15b09c4733fa1e",
+      "status": "EXACT_SAME_CHECKPOINT"
+    },
+    "3_test_dataset_discovery_order": {
+      "total_images": 177,
+      "directory": "data/test",
+      "status": "IDENTICAL_IMAGES (177 images)"
+    },
+    "4_class_mapping": {
+      "classes": [
+        "Bird-drop",
+        "Clean",
+        "Dusty",
+        "Electrical-damage",
+        "Physical-damage",
+        "Snow-Covered"
+      ],
+      "mapping": {
+        "Bird-drop": 0,
+        "Clean": 1,
+        "Dusty": 2,
+        "Electrical-damage": 3,
+        "Physical-damage": 4,
+        "Snow-Covered": 5
+      },
+      "status": "IDENTICAL"
+    },
+    "5_image_preprocessing": {
+      "phase4_canonical": "load_image_rgb (RGBA->RGB composite on white) -> Albumentations Resize (224, 224) -> ImageNet Normalize -> ToTensorV2",
+      "phase6_evaluator": "PIL Image.open().convert('RGB').resize((224, 224)) -> ImageNet Normalize -> ToTensorV2",
+      "status": "DIFFERENCE_IDENTIFIED"
+    },
+    "6_resize_method": {
+      "phase4_canonical": "cv2.INTER_LINEAR (OpenCV bilinear interpolation via Albumentations A.Resize)",
+      "phase6_evaluator": "Image.Resampling.BICUBIC (PIL default bicubic interpolation via Image.resize)",
+      "impact": "CRITICAL ROOT CAUSE: Altered high-frequency edge gradients on subtle damage boundaries."
+    },
+    "7_rgb_conversion": {
+      "phase4_canonical": "load_image_rgb with RGBA alpha composited onto white background",
+      "phase6_evaluator": "pil_img.convert('RGB') (direct conversion, alpha discarded)",
+      "impact": "Minor difference on any RGBA format test images"
+    },
+    "8_imagenet_normalization": {
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "status": "IDENTICAL across both evaluations"
+    },
+    "9_model_architecture_head": {
+      "backbone": "torchvision.models.efficientnet_b0",
+      "head": "nn.Sequential(nn.Dropout(p=0.2), nn.Linear(1280, 6))",
+      "status": "IDENTICAL"
+    },
+    "10_checkpoint_loading": {
+      "status": "IDENTICAL (torch.load map_location='cpu')"
+    },
+    "11_model_eval_usage": {
+      "status": "IDENTICAL (model.eval() called with torch.no_grad())"
+    },
+    "12_randomness_determinism": {
+      "status": "Both evaluations are deterministic (0 stochastic transforms)"
+    },
+    "13_accidental_augmentation": {
+      "status": "CONFIRMED NONE: No augmentation applied in either evaluation"
+    },
+    "14_test_image_filtering": {
+      "status": "IDENTICAL: Exactly 177 images (.JPG / .jpg)"
+    },
+    "15_rgba_handling": {
+      "status": "load_image_rgb composites onto white; PIL convert discards alpha"
+    },
+    "16_metric_calculation": {
+      "status": "IDENTICAL (scikit-learn accuracy_score and f1_score average='macro', zero_division=0)"
+    }
+  }
+}

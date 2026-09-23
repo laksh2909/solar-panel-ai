@@ -1,0 +1,27 @@
+filename,actual_class,predicted_class,confidence,image_path
+Physical (53).jpg,Physical-damage,Clean,0.9523,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Physical-damage\Physical (53).jpg
+Bird (95).jpg,Bird-drop,Dusty,0.879,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Bird-drop\Bird (95).jpg
+Physical (1).jpg,Physical-damage,Bird-drop,0.8641,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Physical-damage\Physical (1).jpg
+Dust (76).jpg,Dusty,Clean,0.8496,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Dusty\Dust (76).jpg
+Bird (113).jpg,Bird-drop,Dusty,0.8298,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Bird-drop\Bird (113).jpg
+Bird (89).jpg,Bird-drop,Dusty,0.8104,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Bird-drop\Bird (89).jpg
+Snow (83).jpg,Snow-Covered,Clean,0.7041,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Snow-Covered\Snow (83).jpg
+Bird (71).jpg,Bird-drop,Dusty,0.6318,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Bird-drop\Bird (71).jpg
+Clean (94).jpg,Clean,Bird-drop,0.6117,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Clean\Clean (94).jpg
+Clean (102).jpg,Clean,Dusty,0.5654,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Clean\Clean (102).jpg
+Physical (37).jpg,Physical-damage,Bird-drop,0.5576,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Physical-damage\Physical (37).jpg
+Bird (92).jpg,Bird-drop,Electrical-damage,0.5536,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Bird-drop\Bird (92).jpg
+Dust (23).jpg,Dusty,Bird-drop,0.4866,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Dusty\Dust (23).jpg
+Dust (11).jpg,Dusty,Bird-drop,0.4866,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Dusty\Dust (11).jpg
+Clean (107).jpg,Clean,Dusty,0.4836,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Clean\Clean (107).jpg
+Electrical (43).jpg,Electrical-damage,Clean,0.4636,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Electrical-damage\Electrical (43).jpg
+Dust (5).jpg,Dusty,Clean,0.4548,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Dusty\Dust (5).jpg
+Snow (20).jpg,Snow-Covered,Bird-drop,0.4462,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Snow-Covered\Snow (20).jpg
+Dust (181).jpg,Dusty,Bird-drop,0.4357,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Dusty\Dust (181).jpg
+Snow (121).jpg,Snow-Covered,Bird-drop,0.4296,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Snow-Covered\Snow (121).jpg
+Dust (66).jpg,Dusty,Clean,0.4284,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Dusty\Dust (66).jpg
+Physical (4).jpg,Physical-damage,Bird-drop,0.423,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Physical-damage\Physical (4).jpg
+Clean (41).jpg,Clean,Electrical-damage,0.3683,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Clean\Clean (41).jpg
+Dust (178).jpg,Dusty,Bird-drop,0.3479,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Dusty\Dust (178).jpg
+Bird (14).JPG,Bird-drop,Physical-damage,0.2832,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Bird-drop\Bird (14).JPG
+Physical (9).jpg,Physical-damage,Dusty,0.2731,C:\Users\laksh\OneDrive\Desktop\AIML\solar-panel-ai\data\raw\Physical-damage\Physical (9).jpg

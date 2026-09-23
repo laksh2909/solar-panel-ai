@@ -1,0 +1,62 @@
+{
+  "project": "AI-Based Solar Panel Fault Detection and Inspection System",
+  "generated_at": "2026-09-23T18:42:00Z",
+  "checkpoints": [
+    {
+      "filename": "efficientnet_b0_baseline_best.pth",
+      "architecture": "EfficientNet-B0",
+      "purpose": "Primary Production Classifier & Grad-CAM visual engine",
+      "parameters": 4015234,
+      "size_bytes": 48671375,
+      "size_mb": 46.42,
+      "sha256": "07890dc9964f5162b53ed4c80778ef147c01b977e8bce76d0a15b09c4733fa1e",
+      "test_accuracy": 0.8531,
+      "macro_f1": 0.8493,
+      "weighted_f1": 0.8525,
+      "cpu_inference_ms": 16.10,
+      "is_production": true
+    },
+    {
+      "filename": "mobilenetv2_baseline_best.pth",
+      "architecture": "MobileNetV2",
+      "purpose": "Lightweight Baseline Benchmark",
+      "parameters": 2231558,
+      "size_bytes": 27161835,
+      "size_mb": 25.90,
+      "sha256": "32a02d9b12495fe8c261bf8cf626b37b1961fd6e71950725b2b0f3812151204e",
+      "test_accuracy": 0.8305,
+      "macro_f1": 0.8366,
+      "weighted_f1": 0.8301,
+      "cpu_inference_ms": 11.59,
+      "is_production": false
+    },
+    {
+      "filename": "efficientnet_b0_augmented_best.pth",
+      "architecture": "EfficientNet-B0 + Domain Augmentation",
+      "purpose": "Ablation Study (domain transforms reduced performance on this dataset)",
+      "parameters": 4015234,
+      "size_bytes": 48672764,
+      "size_mb": 46.42,
+      "sha256": "9b3e9f0cc3f6148c710427ce5156a0db764ebc44387fdf755b1176698645f30a",
+      "test_accuracy": 0.8023,
+      "macro_f1": 0.7890,
+      "weighted_f1": 0.8012,
+      "cpu_inference_ms": 16.15,
+      "is_production": false
+    },
+    {
+      "filename": "sparkneta_baseline_best.pth",
+      "architecture": "SparkNet-A",
+      "purpose": "Dual-branch Experimental Architecture",
+      "parameters": 525000,
+      "size_bytes": 4014799,
+      "size_mb": 3.83,
+      "sha256": "f8446176f41d37c05d8d0172969733eb3a2277d2ddaa90c725c895d9da1d3b4d",
+      "test_accuracy": 0.7966,
+      "macro_f1": 0.7820,
+      "weighted_f1": 0.7950,
+      "cpu_inference_ms": 14.80,
+      "is_production": false
+    }
+  ]
+}

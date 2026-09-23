@@ -1,0 +1,31 @@
+category,name,status,details,timing_ms,limitations
+ML Pipeline,Dataset Split & Classes,PASS,"Discovered exactly 177 test images across all 6 canonical classes {'Bird-drop': 41, 'Clean': 39, 'Dusty': 37, 'Electrical-damage': 21, 'Physical-damage': 13, 'Snow-Covered': 26}",20.05,None
+ML Pipeline,Checkpoint: MobileNetV2 Baseline,PASS,"Integrity verified (SHA256: 32a02d9b12495fe8..., size: 27.16 MB)",75.82,None
+ML Pipeline,Checkpoint: EfficientNet-B0 Baseline,PASS,"Integrity verified (SHA256: 07890dc9964f5162..., size: 48.67 MB)",125.39,None
+ML Pipeline,Checkpoint: EfficientNet-B0 Augmented,PASS,"Integrity verified (SHA256: 9b3e9f0cc3f6148c..., size: 48.67 MB)",125.27,None
+ML Pipeline,Canonical Phase 7A Preprocessing,PASS,Deterministic OpenCV INTER_LINEAR 224x224 and ImageNet normalization verified on 13.JPG,14.38,None
+Model Inference,Forward Pass: MobileNetV2 Baseline,PASS,"Pred: Bird-drop (94.3%), sum(p)=1.0000, weights immutable",463.31,None
+Model Inference,Forward Pass: EfficientNet-B0 Baseline,PASS,"Pred: Bird-drop (92.6%), sum(p)=1.0000, weights immutable",579.21,None
+Model Inference,Forward Pass: EfficientNet-B0 Augmented,PASS,"Pred: Bird-drop (62.6%), sum(p)=1.0000, weights immutable",518.13,None
+Grad-CAM,Target Layer Verification,PASS,Target layer verified as model.features[-1] (Conv2dNormActivation),478.9,None
+Grad-CAM,Class Saliency Map: Bird-drop,PASS,"Heatmap shape (245, 383), values in [0.00, 1.00], overlay valid",545.53,None
+Grad-CAM,Class Saliency Map: Clean,PASS,"Heatmap shape (2048, 1536), values in [0.00, 1.00], overlay valid",773.24,None
+Grad-CAM,Class Saliency Map: Dusty,PASS,"Heatmap shape (750, 1000), values in [0.00, 1.00], overlay valid",574.42,None
+Grad-CAM,Class Saliency Map: Electrical-damage,PASS,"Heatmap shape (450, 640), values in [0.00, 1.00], overlay valid",478.43,None
+Grad-CAM,Class Saliency Map: Physical-damage,PASS,"Heatmap shape (480, 768), values in [0.00, 1.00], overlay valid",474.68,None
+Grad-CAM,Class Saliency Map: Snow-Covered,PASS,"Heatmap shape (324, 701), values in [0.00, 1.00], overlay valid",462.29,None
+Fault Region,Approximate Visual Region Extraction,PASS,"Area: 36.6%, BBox: (0, 0, 316, 170), Disclaimer maintained",942.59,Approximate visual region only; NOT a certified engineering defect boundary
+Severity Estimation,Rule-Based Visual Severity Rules,PASS,"Clean=LOW, Low-conf warning verified (< 0.60), Electrical/Physical damage triggers specialist inspection",0.14,Heuristic visual severity; does NOT measure electrical power loss or crack depth
+Maintenance Guidance,Multi-Class Recommendation Engine,PASS,"Valid urgency levels, non-empty actions, confidence warning appended for < 0.60, disclaimers preserved",0.23,Advisory guidance only; does not replace qualified electrician inspection
+Database,SQLite Local Engine & Repository CRUD,PASS,"Panel & inspection CRUD, history queries, and foreign key integrity verified",70.99,None
+Database,PostgreSQL Production Readiness,WARNING,"SQLAlchemy URL handler ready (active: sqlite:///C:/Users/laksh/OneDrive/Desktop/AIML/solar-panel-ai/data/solar_panel_ai.db), driver available: False",1.59,Live PostgreSQL server credentials not supplied; system safely defaults to local SQLite
+FastAPI API,GET /api/health,PASS,"Status 200, status=ok, model=None",45.78,None
+FastAPI API,GET /api/panels,PASS,"Status 200, returned 2 panels",22.31,None
+FastAPI API,GET /api/inspections,PASS,"Status 200, total inspections: 18",27.62,None
+FastAPI API,Error: Invalid File Format,PASS,"Status 400, rejected non-image upload gracefully: Uploaded file is empty or too small to be a valid image.",449.0,None
+FastAPI API,Error: Nonexistent Panel 404,PASS,Status 404 handled cleanly: Panel 'NONEXISTENT-999999' not found.,7.68,None
+FastAPI API,Error: Nonexistent Inspection 404,PASS,Status 404 handled cleanly: Inspection '99999999' not found.,6.0,None
+Real End-to-End Inspection,Sample: Bird-drop (13.JPG),PASS,"ID #19: Fault=Bird-drop (92.6%), Severity=HIGH, Urgency=PRIORITY, Action='prioritize cleaning and inspection'",174.93,None
+Real End-to-End Inspection,Sample: Electrical-damage (Electrical (1).jpg),PASS,"ID #20: Fault=Electrical-damage (94.0%), Severity=MEDIUM, Urgency=PRIORITY, Action='prioritize electrical inspection by qualified personnel'",179.38,None
+Real End-to-End Inspection,Sample: Clean (Clean (102).jpg),PASS,"ID #21: Fault=Dusty (56.5%), Severity=MEDIUM, Urgency=SCHEDULED, Action='schedule panel cleaning'",225.61,None
+Performance Benchmark,Pipeline Latency Breakdown,PASS,"Forward: 19.44 ms, Grad-CAM+Region: 72.64 ms, Total ML: 94.02 ms on CPU",94.02,CPU-only inference measured; GPU acceleration would yield ~5-10x throughput improvement

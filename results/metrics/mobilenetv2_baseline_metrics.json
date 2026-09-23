@@ -1,0 +1,142 @@
+{
+  "accuracy": 0.8305,
+  "macro_precision": 0.8679,
+  "macro_recall": 0.8216,
+  "macro_f1": 0.8366,
+  "weighted_precision": 0.8377,
+  "weighted_recall": 0.8305,
+  "weighted_f1": 0.8301,
+  "per_class": {
+    "Bird-drop": {
+      "precision": 0.7619,
+      "recall": 0.7805,
+      "f1_score": 0.7711,
+      "support": 41,
+      "predictions_count": 42
+    },
+    "Clean": {
+      "precision": 0.8205,
+      "recall": 0.8205,
+      "f1_score": 0.8205,
+      "support": 39,
+      "predictions_count": 39
+    },
+    "Dusty": {
+      "precision": 0.7561,
+      "recall": 0.8378,
+      "f1_score": 0.7949,
+      "support": 37,
+      "predictions_count": 41
+    },
+    "Electrical-damage": {
+      "precision": 0.9091,
+      "recall": 0.9524,
+      "f1_score": 0.9302,
+      "support": 21,
+      "predictions_count": 22
+    },
+    "Physical-damage": {
+      "precision": 1.0,
+      "recall": 0.6154,
+      "f1_score": 0.7619,
+      "support": 13,
+      "predictions_count": 8
+    },
+    "Snow-Covered": {
+      "precision": 0.96,
+      "recall": 0.9231,
+      "f1_score": 0.9412,
+      "support": 26,
+      "predictions_count": 25
+    }
+  },
+  "confusion_matrix": [
+    [
+      32,
+      2,
+      6,
+      1,
+      0,
+      0
+    ],
+    [
+      2,
+      32,
+      4,
+      1,
+      0,
+      0
+    ],
+    [
+      2,
+      3,
+      31,
+      0,
+      0,
+      1
+    ],
+    [
+      1,
+      0,
+      0,
+      20,
+      0,
+      0
+    ],
+    [
+      3,
+      2,
+      0,
+      0,
+      8,
+      0
+    ],
+    [
+      2,
+      0,
+      0,
+      0,
+      0,
+      24
+    ]
+  ],
+  "total_test_samples": 177,
+  "model_information": {
+    "architecture": "MobileNetV2",
+    "total_parameters": 2231558,
+    "trainable_parameters": 2231558,
+    "non_trainable_parameters": 0,
+    "model_size_mb": 8.51
+  },
+  "inference_benchmark": {
+    "device": "cpu",
+    "input_shape": [
+      1,
+      3,
+      224,
+      224
+    ],
+    "num_runs": 50,
+    "average_latency_ms": 11.586,
+    "min_latency_ms": 8.738,
+    "max_latency_ms": 14.384,
+    "fps": 86.3
+  },
+  "best_validation_result": {
+    "best_epoch": 8,
+    "val_loss": 0.6264,
+    "val_accuracy": 0.7667,
+    "val_macro_f1": 0.7642
+  },
+  "training_parameters": {
+    "model": "MobileNetV2",
+    "device": "cpu",
+    "batch_size": 32,
+    "learning_rate": 0.0001,
+    "optimizer": "Adam",
+    "epochs_completed": 8,
+    "best_epoch": 8,
+    "augmentation_used": false,
+    "loss_function": "CrossEntropyLoss"
+  }
+}

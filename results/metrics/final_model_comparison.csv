@@ -1,0 +1,4 @@
+Model / Configuration,Accuracy,Macro Precision,Macro Recall,Macro F1,Weighted F1,Parameters,Model Size,CPU Inference Time,Approximate FPS
+MobileNetV2 baseline,83.05%,86.79%,82.16%,83.66%,83.01%,"2,231,558",8.51 MB,11.59 ms,86.3
+EfficientNet-B0 baseline,85.31%,87.34%,83.57%,84.93%,85.25%,"4,015,234",15.32 MB,16.10 ms,62.1
+EfficientNet-B0 + domain-specific augmentation,80.23%,85.88%,77.01%,78.90%,79.81%,"4,015,234",15.32 MB,15.72 ms,63.6

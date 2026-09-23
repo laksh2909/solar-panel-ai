@@ -1,0 +1,308 @@
+{
+  "metadata": {
+    "title": "Phase 18 \u2014 Complete System Testing & Validation Report",
+    "timestamp": "2026-09-23T06:39:34.042142",
+    "device": "cpu",
+    "summary": {
+      "total_tests": 30,
+      "passed": 29,
+      "failed": 0,
+      "warnings": 1,
+      "pass_rate_pct": 96.67
+    }
+  },
+  "performance_benchmark": {
+    "avg_forward_ms": 19.44,
+    "avg_gradcam_ms": 72.64,
+    "avg_pipeline_total_ms": 94.02
+  },
+  "real_inspections_executed": [
+    {
+      "sample_class": "Bird-drop",
+      "filename": "13.JPG",
+      "panel_id": "SP-HYD-001",
+      "location": "Rooftop Sector B",
+      "inspection_id": 19,
+      "predicted_fault": "Bird-drop",
+      "confidence": 0.9263,
+      "region_area_percentage": 36.73,
+      "severity": "HIGH",
+      "urgency": "PRIORITY",
+      "maintenance_recommendation": "prioritize cleaning and inspection",
+      "manual_inspection_recommended": true,
+      "latency_ms": 174.93
+    },
+    {
+      "sample_class": "Electrical-damage",
+      "filename": "Electrical (1).jpg",
+      "panel_id": "SP-HYD-002",
+      "location": "Ground Mount Array 1",
+      "inspection_id": 20,
+      "predicted_fault": "Electrical-damage",
+      "confidence": 0.9396,
+      "region_area_percentage": 10.08,
+      "severity": "MEDIUM",
+      "urgency": "PRIORITY",
+      "maintenance_recommendation": "prioritize electrical inspection by qualified personnel",
+      "manual_inspection_recommended": true,
+      "latency_ms": 179.38
+    },
+    {
+      "sample_class": "Clean",
+      "filename": "Clean (102).jpg",
+      "panel_id": "SP-HYD-003",
+      "location": "Commercial Canopy C",
+      "inspection_id": 21,
+      "predicted_fault": "Dusty",
+      "confidence": 0.5654,
+      "region_area_percentage": 20.56,
+      "severity": "MEDIUM",
+      "urgency": "SCHEDULED",
+      "maintenance_recommendation": "schedule panel cleaning",
+      "manual_inspection_recommended": true,
+      "latency_ms": 225.61
+    }
+  ],
+  "test_results": [
+    {
+      "category": "ML Pipeline",
+      "name": "Dataset Split & Classes",
+      "status": "PASS",
+      "details": "Discovered exactly 177 test images across all 6 canonical classes {'Bird-drop': 41, 'Clean': 39, 'Dusty': 37, 'Electrical-damage': 21, 'Physical-damage': 13, 'Snow-Covered': 26}",
+      "timing_ms": 20.05,
+      "limitations": "None"
+    },
+    {
+      "category": "ML Pipeline",
+      "name": "Checkpoint: MobileNetV2 Baseline",
+      "status": "PASS",
+      "details": "Integrity verified (SHA256: 32a02d9b12495fe8..., size: 27.16 MB)",
+      "timing_ms": 75.82,
+      "limitations": "None"
+    },
+    {
+      "category": "ML Pipeline",
+      "name": "Checkpoint: EfficientNet-B0 Baseline",
+      "status": "PASS",
+      "details": "Integrity verified (SHA256: 07890dc9964f5162..., size: 48.67 MB)",
+      "timing_ms": 125.39,
+      "limitations": "None"
+    },
+    {
+      "category": "ML Pipeline",
+      "name": "Checkpoint: EfficientNet-B0 Augmented",
+      "status": "PASS",
+      "details": "Integrity verified (SHA256: 9b3e9f0cc3f6148c..., size: 48.67 MB)",
+      "timing_ms": 125.27,
+      "limitations": "None"
+    },
+    {
+      "category": "ML Pipeline",
+      "name": "Canonical Phase 7A Preprocessing",
+      "status": "PASS",
+      "details": "Deterministic OpenCV INTER_LINEAR 224x224 and ImageNet normalization verified on 13.JPG",
+      "timing_ms": 14.38,
+      "limitations": "None"
+    },
+    {
+      "category": "Model Inference",
+      "name": "Forward Pass: MobileNetV2 Baseline",
+      "status": "PASS",
+      "details": "Pred: Bird-drop (94.3%), sum(p)=1.0000, weights immutable",
+      "timing_ms": 463.31,
+      "limitations": "None"
+    },
+    {
+      "category": "Model Inference",
+      "name": "Forward Pass: EfficientNet-B0 Baseline",
+      "status": "PASS",
+      "details": "Pred: Bird-drop (92.6%), sum(p)=1.0000, weights immutable",
+      "timing_ms": 579.21,
+      "limitations": "None"
+    },
+    {
+      "category": "Model Inference",
+      "name": "Forward Pass: EfficientNet-B0 Augmented",
+      "status": "PASS",
+      "details": "Pred: Bird-drop (62.6%), sum(p)=1.0000, weights immutable",
+      "timing_ms": 518.13,
+      "limitations": "None"
+    },
+    {
+      "category": "Grad-CAM",
+      "name": "Target Layer Verification",
+      "status": "PASS",
+      "details": "Target layer verified as model.features[-1] (Conv2dNormActivation)",
+      "timing_ms": 478.9,
+      "limitations": "None"
+    },
+    {
+      "category": "Grad-CAM",
+      "name": "Class Saliency Map: Bird-drop",
+      "status": "PASS",
+      "details": "Heatmap shape (245, 383), values in [0.00, 1.00], overlay valid",
+      "timing_ms": 545.53,
+      "limitations": "None"
+    },
+    {
+      "category": "Grad-CAM",
+      "name": "Class Saliency Map: Clean",
+      "status": "PASS",
+      "details": "Heatmap shape (2048, 1536), values in [0.00, 1.00], overlay valid",
+      "timing_ms": 773.24,
+      "limitations": "None"
+    },
+    {
+      "category": "Grad-CAM",
+      "name": "Class Saliency Map: Dusty",
+      "status": "PASS",
+      "details": "Heatmap shape (750, 1000), values in [0.00, 1.00], overlay valid",
+      "timing_ms": 574.42,
+      "limitations": "None"
+    },
+    {
+      "category": "Grad-CAM",
+      "name": "Class Saliency Map: Electrical-damage",
+      "status": "PASS",
+      "details": "Heatmap shape (450, 640), values in [0.00, 1.00], overlay valid",
+      "timing_ms": 478.43,
+      "limitations": "None"
+    },
+    {
+      "category": "Grad-CAM",
+      "name": "Class Saliency Map: Physical-damage",
+      "status": "PASS",
+      "details": "Heatmap shape (480, 768), values in [0.00, 1.00], overlay valid",
+      "timing_ms": 474.68,
+      "limitations": "None"
+    },
+    {
+      "category": "Grad-CAM",
+      "name": "Class Saliency Map: Snow-Covered",
+      "status": "PASS",
+      "details": "Heatmap shape (324, 701), values in [0.00, 1.00], overlay valid",
+      "timing_ms": 462.29,
+      "limitations": "None"
+    },
+    {
+      "category": "Fault Region",
+      "name": "Approximate Visual Region Extraction",
+      "status": "PASS",
+      "details": "Area: 36.6%, BBox: (0, 0, 316, 170), Disclaimer maintained",
+      "timing_ms": 942.59,
+      "limitations": "Approximate visual region only; NOT a certified engineering defect boundary"
+    },
+    {
+      "category": "Severity Estimation",
+      "name": "Rule-Based Visual Severity Rules",
+      "status": "PASS",
+      "details": "Clean=LOW, Low-conf warning verified (< 0.60), Electrical/Physical damage triggers specialist inspection",
+      "timing_ms": 0.14,
+      "limitations": "Heuristic visual severity; does NOT measure electrical power loss or crack depth"
+    },
+    {
+      "category": "Maintenance Guidance",
+      "name": "Multi-Class Recommendation Engine",
+      "status": "PASS",
+      "details": "Valid urgency levels, non-empty actions, confidence warning appended for < 0.60, disclaimers preserved",
+      "timing_ms": 0.23,
+      "limitations": "Advisory guidance only; does not replace qualified electrician inspection"
+    },
+    {
+      "category": "Database",
+      "name": "SQLite Local Engine & Repository CRUD",
+      "status": "PASS",
+      "details": "Panel & inspection CRUD, history queries, and foreign key integrity verified",
+      "timing_ms": 70.99,
+      "limitations": "None"
+    },
+    {
+      "category": "Database",
+      "name": "PostgreSQL Production Readiness",
+      "status": "WARNING",
+      "details": "SQLAlchemy URL handler ready (active: sqlite:///C:/Users/laksh/OneDrive/Desktop/AIML/solar-panel-ai/data/solar_panel_ai.db), driver available: False",
+      "timing_ms": 1.59,
+      "limitations": "Live PostgreSQL server credentials not supplied; system safely defaults to local SQLite"
+    },
+    {
+      "category": "FastAPI API",
+      "name": "GET /api/health",
+      "status": "PASS",
+      "details": "Status 200, status=ok, model=None",
+      "timing_ms": 45.78,
+      "limitations": "None"
+    },
+    {
+      "category": "FastAPI API",
+      "name": "GET /api/panels",
+      "status": "PASS",
+      "details": "Status 200, returned 2 panels",
+      "timing_ms": 22.31,
+      "limitations": "None"
+    },
+    {
+      "category": "FastAPI API",
+      "name": "GET /api/inspections",
+      "status": "PASS",
+      "details": "Status 200, total inspections: 18",
+      "timing_ms": 27.62,
+      "limitations": "None"
+    },
+    {
+      "category": "FastAPI API",
+      "name": "Error: Invalid File Format",
+      "status": "PASS",
+      "details": "Status 400, rejected non-image upload gracefully: Uploaded file is empty or too small to be a valid image.",
+      "timing_ms": 449.0,
+      "limitations": "None"
+    },
+    {
+      "category": "FastAPI API",
+      "name": "Error: Nonexistent Panel 404",
+      "status": "PASS",
+      "details": "Status 404 handled cleanly: Panel 'NONEXISTENT-999999' not found.",
+      "timing_ms": 7.68,
+      "limitations": "None"
+    },
+    {
+      "category": "FastAPI API",
+      "name": "Error: Nonexistent Inspection 404",
+      "status": "PASS",
+      "details": "Status 404 handled cleanly: Inspection '99999999' not found.",
+      "timing_ms": 6.0,
+      "limitations": "None"
+    },
+    {
+      "category": "Real End-to-End Inspection",
+      "name": "Sample: Bird-drop (13.JPG)",
+      "status": "PASS",
+      "details": "ID #19: Fault=Bird-drop (92.6%), Severity=HIGH, Urgency=PRIORITY, Action='prioritize cleaning and inspection'",
+      "timing_ms": 174.93,
+      "limitations": "None"
+    },
+    {
+      "category": "Real End-to-End Inspection",
+      "name": "Sample: Electrical-damage (Electrical (1).jpg)",
+      "status": "PASS",
+      "details": "ID #20: Fault=Electrical-damage (94.0%), Severity=MEDIUM, Urgency=PRIORITY, Action='prioritize electrical inspection by qualified personnel'",
+      "timing_ms": 179.38,
+      "limitations": "None"
+    },
+    {
+      "category": "Real End-to-End Inspection",
+      "name": "Sample: Clean (Clean (102).jpg)",
+      "status": "PASS",
+      "details": "ID #21: Fault=Dusty (56.5%), Severity=MEDIUM, Urgency=SCHEDULED, Action='schedule panel cleaning'",
+      "timing_ms": 225.61,
+      "limitations": "None"
+    },
+    {
+      "category": "Performance Benchmark",
+      "name": "Pipeline Latency Breakdown",
+      "status": "PASS",
+      "details": "Forward: 19.44 ms, Grad-CAM+Region: 72.64 ms, Total ML: 94.02 ms on CPU",
+      "timing_ms": 94.02,
+      "limitations": "CPU-only inference measured; GPU acceleration would yield ~5-10x throughput improvement"
+    }
+  ]
+}

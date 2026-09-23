@@ -1,0 +1,45 @@
+# Git and IDE
+.git
+.gitignore
+.vscode
+.idea
+
+# Python virtual environment and caches
+.venv
+env/
+venv/
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.coverage
+htmlcov
+
+# Node and Frontend build artifacts (handled in frontend context)
+node_modules
+frontend
+.next
+
+# Training and evaluation logs/temporary files
+logs/
+*.log
+runs/
+wandb/
+results/plots
+results/metrics
+notebooks/
+archive.zip
+*.tmp
+*.temp
+
+# Explicitly ensure model checkpoints are INCLUDED
+!models
+!models/checkpoints
+!models/checkpoints/*.pth
+
+# Data: Exclude bulky raw training data from image build (mount via volume or copy as needed)
+data/raw/*
+data/processed/*
+data/train/*
+data/val/*

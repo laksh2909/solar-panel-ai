@@ -1,0 +1,158 @@
+[
+  {
+    "filename": "13.JPG",
+    "true_class": "Bird-drop",
+    "predicted_class": "Bird-drop",
+    "confidence": 0.9263,
+    "target_layer": "Conv2dNormActivation",
+    "correct_prediction": true,
+    "paths": {
+      "original": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Bird-drop\\original_13.png",
+      "heatmap": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Bird-drop\\heatmap_13.png",
+      "overlay": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Bird-drop\\overlay_13.png"
+    }
+  },
+  {
+    "filename": "15.JPG",
+    "true_class": "Bird-drop",
+    "predicted_class": "Bird-drop",
+    "confidence": 0.6886,
+    "target_layer": "Conv2dNormActivation",
+    "correct_prediction": true,
+    "paths": {
+      "original": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Bird-drop\\original_15.png",
+      "heatmap": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Bird-drop\\heatmap_15.png",
+      "overlay": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Bird-drop\\overlay_15.png"
+    }
+  },
+  {
+    "filename": "Clean (102).jpg",
+    "true_class": "Clean",
+    "predicted_class": "Dusty",
+    "confidence": 0.5654,
+    "target_layer": "Conv2dNormActivation",
+    "correct_prediction": false,
+    "paths": {
+      "original": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Clean\\original_Clean_102.png",
+      "heatmap": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Clean\\heatmap_Clean_102.png",
+      "overlay": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Clean\\overlay_Clean_102.png"
+    }
+  },
+  {
+    "filename": "Clean (104).jpg",
+    "true_class": "Clean",
+    "predicted_class": "Clean",
+    "confidence": 0.9754,
+    "target_layer": "Conv2dNormActivation",
+    "correct_prediction": true,
+    "paths": {
+      "original": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Clean\\original_Clean_104.png",
+      "heatmap": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Clean\\heatmap_Clean_104.png",
+      "overlay": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Clean\\overlay_Clean_104.png"
+    }
+  },
+  {
+    "filename": "Dust (1).jpg",
+    "true_class": "Dusty",
+    "predicted_class": "Dusty",
+    "confidence": 0.4275,
+    "target_layer": "Conv2dNormActivation",
+    "correct_prediction": true,
+    "paths": {
+      "original": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Dusty\\original_Dust_1.png",
+      "heatmap": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Dusty\\heatmap_Dust_1.png",
+      "overlay": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Dusty\\overlay_Dust_1.png"
+    }
+  },
+  {
+    "filename": "Dust (100).jpg",
+    "true_class": "Dusty",
+    "predicted_class": "Dusty",
+    "confidence": 0.9814,
+    "target_layer": "Conv2dNormActivation",
+    "correct_prediction": true,
+    "paths": {
+      "original": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Dusty\\original_Dust_100.png",
+      "heatmap": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Dusty\\heatmap_Dust_100.png",
+      "overlay": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Dusty\\overlay_Dust_100.png"
+    }
+  },
+  {
+    "filename": "Electrical (1).jpg",
+    "true_class": "Electrical-damage",
+    "predicted_class": "Electrical-damage",
+    "confidence": 0.9396,
+    "target_layer": "Conv2dNormActivation",
+    "correct_prediction": true,
+    "paths": {
+      "original": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Electrical-damage\\original_Electrical_1.png",
+      "heatmap": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Electrical-damage\\heatmap_Electrical_1.png",
+      "overlay": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Electrical-damage\\overlay_Electrical_1.png"
+    }
+  },
+  {
+    "filename": "Electrical (10).jpg",
+    "true_class": "Electrical-damage",
+    "predicted_class": "Electrical-damage",
+    "confidence": 0.949,
+    "target_layer": "Conv2dNormActivation",
+    "correct_prediction": true,
+    "paths": {
+      "original": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Electrical-damage\\original_Electrical_10.png",
+      "heatmap": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Electrical-damage\\heatmap_Electrical_10.png",
+      "overlay": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Electrical-damage\\overlay_Electrical_10.png"
+    }
+  },
+  {
+    "filename": "Physical (1).jpg",
+    "true_class": "Physical-damage",
+    "predicted_class": "Bird-drop",
+    "confidence": 0.8641,
+    "target_layer": "Conv2dNormActivation",
+    "correct_prediction": false,
+    "paths": {
+      "original": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Physical-damage\\original_Physical_1.png",
+      "heatmap": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Physical-damage\\heatmap_Physical_1.png",
+      "overlay": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Physical-damage\\overlay_Physical_1.png"
+    }
+  },
+  {
+    "filename": "Physical (19).jpg",
+    "true_class": "Physical-damage",
+    "predicted_class": "Physical-damage",
+    "confidence": 0.3017,
+    "target_layer": "Conv2dNormActivation",
+    "correct_prediction": true,
+    "paths": {
+      "original": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Physical-damage\\original_Physical_19.png",
+      "heatmap": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Physical-damage\\heatmap_Physical_19.png",
+      "overlay": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Physical-damage\\overlay_Physical_19.png"
+    }
+  },
+  {
+    "filename": "Snow (107).jpg",
+    "true_class": "Snow-Covered",
+    "predicted_class": "Snow-Covered",
+    "confidence": 0.9885,
+    "target_layer": "Conv2dNormActivation",
+    "correct_prediction": true,
+    "paths": {
+      "original": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Snow-Covered\\original_Snow_107.png",
+      "heatmap": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Snow-Covered\\heatmap_Snow_107.png",
+      "overlay": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Snow-Covered\\overlay_Snow_107.png"
+    }
+  },
+  {
+    "filename": "Snow (108).jpg",
+    "true_class": "Snow-Covered",
+    "predicted_class": "Snow-Covered",
+    "confidence": 0.6222,
+    "target_layer": "Conv2dNormActivation",
+    "correct_prediction": true,
+    "paths": {
+      "original": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Snow-Covered\\original_Snow_108.png",
+      "heatmap": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Snow-Covered\\heatmap_Snow_108.png",
+      "overlay": "C:\\Users\\laksh\\OneDrive\\Desktop\\AIML\\solar-panel-ai\\results\\gradcam\\Snow-Covered\\overlay_Snow_108.png"
+    }
+  }
+]

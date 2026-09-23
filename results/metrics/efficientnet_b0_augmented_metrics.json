@@ -1,0 +1,141 @@
+{
+  "accuracy": 0.8023,
+  "macro_precision": 0.8588,
+  "macro_recall": 0.7701,
+  "macro_f1": 0.789,
+  "weighted_precision": 0.8205,
+  "weighted_recall": 0.8023,
+  "weighted_f1": 0.7981,
+  "per_class": {
+    "Bird-drop": {
+      "precision": 0.7381,
+      "recall": 0.7561,
+      "f1_score": 0.747,
+      "support": 41,
+      "predictions_count": 42
+    },
+    "Clean": {
+      "precision": 0.7,
+      "recall": 0.8974,
+      "f1_score": 0.7865,
+      "support": 39,
+      "predictions_count": 50
+    },
+    "Dusty": {
+      "precision": 0.8056,
+      "recall": 0.7838,
+      "f1_score": 0.7945,
+      "support": 37,
+      "predictions_count": 36
+    },
+    "Electrical-damage": {
+      "precision": 0.9524,
+      "recall": 0.9524,
+      "f1_score": 0.9524,
+      "support": 21,
+      "predictions_count": 21
+    },
+    "Physical-damage": {
+      "precision": 1.0,
+      "recall": 0.3846,
+      "f1_score": 0.5556,
+      "support": 13,
+      "predictions_count": 5
+    },
+    "Snow-Covered": {
+      "precision": 0.9565,
+      "recall": 0.8462,
+      "f1_score": 0.898,
+      "support": 26,
+      "predictions_count": 23
+    }
+  },
+  "confusion_matrix": [
+    [
+      31,
+      5,
+      5,
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      35,
+      2,
+      1,
+      0,
+      0
+    ],
+    [
+      3,
+      5,
+      29,
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0,
+      20,
+      0,
+      0
+    ],
+    [
+      4,
+      3,
+      0,
+      0,
+      5,
+      1
+    ],
+    [
+      2,
+      2,
+      0,
+      0,
+      0,
+      22
+    ]
+  ],
+  "total_test_samples": 177,
+  "model_information": {
+    "architecture": "EfficientNet-B0",
+    "total_parameters": 4015234,
+    "trainable_parameters": 4015234,
+    "non_trainable_parameters": 0,
+    "model_size_mb": 15.32
+  },
+  "inference_benchmark": {
+    "device": "cpu",
+    "input_shape": [
+      1,
+      3,
+      224,
+      224
+    ],
+    "num_runs": 50,
+    "average_latency_ms": 15.716,
+    "min_latency_ms": 12.345,
+    "max_latency_ms": 18.157,
+    "fps": 63.6
+  },
+  "best_validation_result": {
+    "best_epoch": 5,
+    "val_loss": 0.7749048935042487,
+    "val_accuracy": 0.7333333333333333,
+    "val_macro_f1": 0.7140422333503529
+  },
+  "baseline_comparison": {
+    "mobilenet_v2_baseline_acc": 0.8305,
+    "mobilenet_v2_baseline_macro_f1": 0.8366,
+    "efficientnet_b0_baseline_acc": 0.8531,
+    "efficientnet_b0_baseline_macro_f1": 0.8493,
+    "augmented_acc": 0.8023,
+    "augmented_macro_f1": 0.789,
+    "accuracy_improvement_pct_pts": -5.08,
+    "macro_f1_improvement_pct_pts": -6.03
+  }
+}

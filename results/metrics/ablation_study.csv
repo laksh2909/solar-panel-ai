@@ -1,0 +1,4 @@
+Experiment,Architecture,Augmentation,Accuracy,Macro F1,Interpretation
+MobileNetV2 baseline,MobileNetV2,None,83.05%,83.66%,Establishes a lightweight baseline with fast CPU inference and low memory footprint.
+EfficientNet-B0 baseline,EfficientNet-B0,None,85.31%,84.93%,Provides stronger classification metrics across all fault types but requires more parameters and inference time.
+EfficientNet-B0 + domain-specific augmentation,EfficientNet-B0,Domain-Specific,80.23%,78.90%,Domain-specific augmentation was tested as an improvement strategy but reduced performance on this dataset.

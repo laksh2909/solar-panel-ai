@@ -1,0 +1,45 @@
+# ==============================================================================
+# Docker Compose Override for AWS EC2 Deployment
+# ==============================================================================
+#
+# Use this file INSTEAD OF docker-compose.yml on EC2.
+# It overrides the following for production EC2 behaviour:
+#   - restart: always   (survives EC2 reboots, not just stop/start)
+#   - Removes build blocks (uses pre-built images or builds via compose)
+#   - Sources NEXT_PUBLIC_API_BASE_URL from .env (set by deploy.sh)
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.ec2.yml up -d
+#
+# Or use deploy.sh which handles all of this automatically.
+# ==============================================================================
+
+services:
+  backend:
+    restart: always
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-sqlite:////app/data/solar_panel_ai.db}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/app/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  frontend:
+    restart: always
+    build:
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - PORT=3000
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

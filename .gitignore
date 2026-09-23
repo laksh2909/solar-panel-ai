@@ -1,0 +1,97 @@
+# Python virtual environment
+.venv/
+env/
+venv/
+ENV/
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment variables & secrets
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+*.pem
+*.key
+
+# Frontend dependencies & Next.js build
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/next-env.d.ts
+.vercel/
+*.tsbuildinfo
+
+# Coverage & testing
+coverage/
+frontend/coverage/
+
+# Logs and training run output
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+runs/
+wandb/
+
+# Datasets (large image archives & raw images excluded; directory scaffolding preserved)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/train/*
+!data/train/.gitkeep
+data/val/*
+!data/val/.gitkeep
+data/test/*
+!data/test/.gitkeep
+*.zip
+*.tar
+*.tar.gz
+
+# Local SQLite databases (runtime generated)
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+data/*.db
+data/*.sqlite
+
+# Model Checkpoints & Weights
+# Trained PyTorch checkpoints are tracked to support reproducible execution
+*.pt
+*.onnx
+*.pkl
+*.h5
+!models/checkpoints/.gitkeep
+!models/checkpoints/*.pth
+!models/checkpoints/*.json
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Operating System & Temporary files
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.tmp
+*.temp
+
+# IDE-specific configurations
+.vscode/
+.idea/
+*.swp
+*.swo

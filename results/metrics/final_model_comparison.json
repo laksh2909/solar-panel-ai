@@ -1,0 +1,410 @@
+{
+  "metadata": {
+    "title": "Phase 17 \u2014 Final Model Comparison and Ablation Study",
+    "generated_at": "2026-09-23T06:26:08.613134",
+    "evaluation_pipeline": "Phase 7A Canonical Pipeline",
+    "test_images_count": 177,
+    "classes": [
+      "Bird-drop",
+      "Clean",
+      "Dusty",
+      "Electrical-damage",
+      "Physical-damage",
+      "Snow-Covered"
+    ],
+    "hardware_device": "cpu"
+  },
+  "models": {
+    "mobilenetv2_baseline": {
+      "display_name": "MobileNetV2 baseline",
+      "architecture": "MobileNetV2",
+      "augmentation": "None",
+      "checkpoint": "models\\checkpoints\\mobilenetv2_baseline_best.pth",
+      "parameters": 2231558,
+      "trainable_parameters": 2231558,
+      "model_size_mb": 8.51,
+      "latency_ms": 11.59,
+      "fps": 86.3,
+      "accuracy": 0.8305,
+      "macro_precision": 0.8679,
+      "macro_recall": 0.8216,
+      "macro_f1": 0.8366,
+      "weighted_precision": 0.8377,
+      "weighted_recall": 0.8305,
+      "weighted_f1": 0.8301,
+      "per_class": {
+        "Bird-drop": {
+          "precision": 0.7619,
+          "recall": 0.7805,
+          "f1_score": 0.7711,
+          "support": 41,
+          "predictions_count": 42
+        },
+        "Clean": {
+          "precision": 0.8205,
+          "recall": 0.8205,
+          "f1_score": 0.8205,
+          "support": 39,
+          "predictions_count": 39
+        },
+        "Dusty": {
+          "precision": 0.7561,
+          "recall": 0.8378,
+          "f1_score": 0.7949,
+          "support": 37,
+          "predictions_count": 41
+        },
+        "Electrical-damage": {
+          "precision": 0.9091,
+          "recall": 0.9524,
+          "f1_score": 0.9302,
+          "support": 21,
+          "predictions_count": 22
+        },
+        "Physical-damage": {
+          "precision": 1.0,
+          "recall": 0.6154,
+          "f1_score": 0.7619,
+          "support": 13,
+          "predictions_count": 8
+        },
+        "Snow-Covered": {
+          "precision": 0.96,
+          "recall": 0.9231,
+          "f1_score": 0.9412,
+          "support": 26,
+          "predictions_count": 25
+        }
+      },
+      "confusion_matrix": [
+        [
+          32,
+          2,
+          6,
+          1,
+          0,
+          0
+        ],
+        [
+          2,
+          32,
+          4,
+          1,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          31,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          20,
+          0,
+          0
+        ],
+        [
+          3,
+          2,
+          0,
+          0,
+          8,
+          0
+        ],
+        [
+          2,
+          0,
+          0,
+          0,
+          0,
+          24
+        ]
+      ],
+      "interpretation": "Establishes a lightweight baseline with fast CPU inference and low memory footprint."
+    },
+    "efficientnet_b0_baseline": {
+      "display_name": "EfficientNet-B0 baseline",
+      "architecture": "EfficientNet-B0",
+      "augmentation": "None",
+      "checkpoint": "models\\checkpoints\\efficientnet_b0_baseline_best.pth",
+      "parameters": 4015234,
+      "trainable_parameters": 4015234,
+      "model_size_mb": 15.32,
+      "latency_ms": 16.1,
+      "fps": 62.1,
+      "accuracy": 0.8531,
+      "macro_precision": 0.8734,
+      "macro_recall": 0.8357,
+      "macro_f1": 0.8493,
+      "weighted_precision": 0.8578,
+      "weighted_recall": 0.8531,
+      "weighted_f1": 0.8525,
+      "per_class": {
+        "Bird-drop": {
+          "precision": 0.7778,
+          "recall": 0.8537,
+          "f1_score": 0.814,
+          "support": 41,
+          "predictions_count": 45
+        },
+        "Clean": {
+          "precision": 0.8537,
+          "recall": 0.8974,
+          "f1_score": 0.875,
+          "support": 39,
+          "predictions_count": 41
+        },
+        "Dusty": {
+          "precision": 0.8108,
+          "recall": 0.8108,
+          "f1_score": 0.8108,
+          "support": 37,
+          "predictions_count": 37
+        },
+        "Electrical-damage": {
+          "precision": 0.9091,
+          "recall": 0.9524,
+          "f1_score": 0.9302,
+          "support": 21,
+          "predictions_count": 22
+        },
+        "Physical-damage": {
+          "precision": 0.8889,
+          "recall": 0.6154,
+          "f1_score": 0.7273,
+          "support": 13,
+          "predictions_count": 9
+        },
+        "Snow-Covered": {
+          "precision": 1.0,
+          "recall": 0.8846,
+          "f1_score": 0.9388,
+          "support": 26,
+          "predictions_count": 23
+        }
+      },
+      "confusion_matrix": [
+        [
+          35,
+          0,
+          4,
+          1,
+          1,
+          0
+        ],
+        [
+          1,
+          35,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          30,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          20,
+          0,
+          0
+        ],
+        [
+          3,
+          1,
+          1,
+          0,
+          8,
+          0
+        ],
+        [
+          2,
+          1,
+          0,
+          0,
+          0,
+          23
+        ]
+      ],
+      "interpretation": "Provides stronger classification metrics across all fault types but requires more parameters and inference time."
+    },
+    "efficientnet_b0_augmented": {
+      "display_name": "EfficientNet-B0 + domain-specific augmentation",
+      "architecture": "EfficientNet-B0",
+      "augmentation": "Domain-Specific",
+      "checkpoint": "models\\checkpoints\\efficientnet_b0_augmented_best.pth",
+      "parameters": 4015234,
+      "trainable_parameters": 4015234,
+      "model_size_mb": 15.32,
+      "latency_ms": 15.72,
+      "fps": 63.6,
+      "accuracy": 0.8023,
+      "macro_precision": 0.8588,
+      "macro_recall": 0.7701,
+      "macro_f1": 0.789,
+      "weighted_precision": 0.8205,
+      "weighted_recall": 0.8023,
+      "weighted_f1": 0.7981,
+      "per_class": {
+        "Bird-drop": {
+          "precision": 0.7381,
+          "recall": 0.7561,
+          "f1_score": 0.747,
+          "support": 41,
+          "predictions_count": 42
+        },
+        "Clean": {
+          "precision": 0.7,
+          "recall": 0.8974,
+          "f1_score": 0.7865,
+          "support": 39,
+          "predictions_count": 50
+        },
+        "Dusty": {
+          "precision": 0.8056,
+          "recall": 0.7838,
+          "f1_score": 0.7945,
+          "support": 37,
+          "predictions_count": 36
+        },
+        "Electrical-damage": {
+          "precision": 0.9524,
+          "recall": 0.9524,
+          "f1_score": 0.9524,
+          "support": 21,
+          "predictions_count": 21
+        },
+        "Physical-damage": {
+          "precision": 1.0,
+          "recall": 0.3846,
+          "f1_score": 0.5556,
+          "support": 13,
+          "predictions_count": 5
+        },
+        "Snow-Covered": {
+          "precision": 0.9565,
+          "recall": 0.8462,
+          "f1_score": 0.898,
+          "support": 26,
+          "predictions_count": 23
+        }
+      },
+      "confusion_matrix": [
+        [
+          31,
+          5,
+          5,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          35,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          3,
+          5,
+          29,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          20,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          0,
+          0,
+          5,
+          1
+        ],
+        [
+          2,
+          2,
+          0,
+          0,
+          0,
+          22
+        ]
+      ],
+      "interpretation": "Domain-specific augmentation was tested as an improvement strategy but reduced performance on this dataset."
+    }
+  },
+  "pairwise_differences": {
+    "mobilenetv2_vs_efficientnet_b0": {
+      "comparison": "EfficientNet-B0 Baseline vs MobileNetV2 Baseline",
+      "accuracy_diff_pct_pts": 2.26,
+      "macro_precision_diff_pct_pts": 0.55,
+      "macro_recall_diff_pct_pts": 1.41,
+      "macro_f1_diff_pct_pts": 1.27,
+      "weighted_f1_diff_pct_pts": 2.24,
+      "parameter_diff": 1783676,
+      "parameter_diff_pct": 79.93,
+      "model_size_diff_mb": 6.81,
+      "latency_diff_ms": 4.51
+    },
+    "efficientnet_b0_baseline_vs_augmented": {
+      "comparison": "EfficientNet-B0 Augmented vs EfficientNet-B0 Baseline",
+      "accuracy_diff_pct_pts": -5.08,
+      "macro_precision_diff_pct_pts": -1.46,
+      "macro_recall_diff_pct_pts": -6.56,
+      "macro_f1_diff_pct_pts": -6.03,
+      "weighted_f1_diff_pct_pts": -5.44,
+      "parameter_diff": 0,
+      "parameter_diff_pct": 0.0,
+      "model_size_diff_mb": 0.0,
+      "latency_diff_ms": -0.38
+    }
+  },
+  "ablation_study": [
+    {
+      "experiment": "MobileNetV2 baseline",
+      "architecture": "MobileNetV2",
+      "augmentation": "None",
+      "accuracy": 0.8305,
+      "macro_f1": 0.8366,
+      "interpretation": "Establishes a lightweight baseline with fast CPU inference and low memory footprint."
+    },
+    {
+      "experiment": "EfficientNet-B0 baseline",
+      "architecture": "EfficientNet-B0",
+      "augmentation": "None",
+      "accuracy": 0.8531,
+      "macro_f1": 0.8493,
+      "interpretation": "Provides stronger classification metrics across all fault types but requires more parameters and inference time."
+    },
+    {
+      "experiment": "EfficientNet-B0 + domain-specific augmentation",
+      "architecture": "EfficientNet-B0",
+      "augmentation": "Domain-Specific",
+      "accuracy": 0.8023,
+      "macro_f1": 0.789,
+      "interpretation": "Domain-specific augmentation was tested as an improvement strategy but reduced performance on this dataset."
+    }
+  ]
+}

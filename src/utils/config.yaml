@@ -1,0 +1,51 @@
+# Solar Panel Fault Detection - Configuration File
+# SparkNet Replication & Baseline Framework
+
+project:
+  name: "solar-panel-fault-detection"
+  version: "1.0.0"
+  seed: 42
+
+dataset:
+  name: "pythonafroz/solar-panel-images"
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  train_dir: "data/train"
+  val_dir: "data/val"
+  test_dir: "data/test"
+  split_ratios:
+    train: 0.60
+    val: 0.20
+    test: 0.20
+  classes:
+    - "Bird-drop"
+    - "Clean"
+    - "Dusty"
+    - "Electrical-damage"
+    - "Physical-damage"
+    - "Snow-Covered"
+  num_classes: 6
+  image_size: [224, 224] # Height, Width
+  channels: 3
+
+preprocessing:
+  target_size: [224, 224]
+  normalization:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+augmentation:
+  # Albumentations training augmentation parameters (research paper used no augmentation)
+  horizontal_flip_p: 0.5
+  rotation_limit: 15
+  rotation_p: 0.5
+  brightness_contrast_p: 0.3
+  brightness_limit: 0.15
+  contrast_limit: 0.15
+  motion_blur_p: 0.15
+  gaussian_noise_p: 0.15
+
+paths:
+  metrics_dir: "results/metrics"
+  plots_dir: "results/plots"
+  checkpoints_dir: "models/checkpoints"

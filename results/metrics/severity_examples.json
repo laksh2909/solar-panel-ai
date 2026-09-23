@@ -1,0 +1,134 @@
+[
+  {
+    "filename": "13.JPG",
+    "true_class": "Bird-drop",
+    "predicted_class": "Bird-drop",
+    "confidence": 0.9263,
+    "region_area_percent": 36.73,
+    "severity": "HIGH",
+    "severity_score": 61.5,
+    "explanation": "Bird-drop detected with 92.6% confidence occupying 36.7% of visual panel area (extensive visual anomaly footprint (>= 15.0%)).",
+    "manual_inspection_recommended": true
+  },
+  {
+    "filename": "15.JPG",
+    "true_class": "Bird-drop",
+    "predicted_class": "Bird-drop",
+    "confidence": 0.6886,
+    "region_area_percent": 6.47,
+    "severity": "LOW",
+    "severity_score": 32.3,
+    "explanation": "Bird-drop detected with 68.9% confidence occupying 6.5% of visual panel area (compact focal region (< 8.0%)).",
+    "manual_inspection_recommended": false
+  },
+  {
+    "filename": "Clean (102).jpg",
+    "true_class": "Clean",
+    "predicted_class": "Dusty",
+    "confidence": 0.5654,
+    "region_area_percent": 20.56,
+    "severity": "MEDIUM",
+    "severity_score": 35.1,
+    "explanation": "Dusty accumulation detected with 56.5% confidence covering 20.6% of visual panel area (moderate diffuse coverage (12.0%-25.0%)). [Warning: Low model confidence (< 60%) \u2014 manual inspection recommended.]",
+    "manual_inspection_recommended": true
+  },
+  {
+    "filename": "Clean (104).jpg",
+    "true_class": "Clean",
+    "predicted_class": "Clean",
+    "confidence": 0.9754,
+    "region_area_percent": 11.25,
+    "severity": "LOW",
+    "severity_score": 0.5,
+    "explanation": "Panel surface is visually clean (confidence: 97.5%). No visual fault indicators or localized defects detected.",
+    "manual_inspection_recommended": false
+  },
+  {
+    "filename": "Dust (1).jpg",
+    "true_class": "Dusty",
+    "predicted_class": "Dusty",
+    "confidence": 0.4275,
+    "region_area_percent": 8.2,
+    "severity": "LOW",
+    "severity_score": 23.1,
+    "explanation": "Dusty accumulation detected with 42.7% confidence covering 8.2% of visual panel area (light/partial surface accumulation (< 12.0%)). [Warning: Low model confidence (< 60%) \u2014 manual inspection recommended.]",
+    "manual_inspection_recommended": true
+  },
+  {
+    "filename": "Dust (100).jpg",
+    "true_class": "Dusty",
+    "predicted_class": "Dusty",
+    "confidence": 0.9814,
+    "region_area_percent": 15.7,
+    "severity": "MEDIUM",
+    "severity_score": 33.2,
+    "explanation": "Dusty accumulation detected with 98.1% confidence covering 15.7% of visual panel area (moderate diffuse coverage (12.0%-25.0%)).",
+    "manual_inspection_recommended": false
+  },
+  {
+    "filename": "Electrical (1).jpg",
+    "true_class": "Electrical-damage",
+    "predicted_class": "Electrical-damage",
+    "confidence": 0.9396,
+    "region_area_percent": 10.08,
+    "severity": "MEDIUM",
+    "severity_score": 63.7,
+    "explanation": "Electrical-damage detected with 94.0% confidence occupying 10.1% of visual panel area (moderate focal footprint (8.0%-15.0%)).",
+    "manual_inspection_recommended": true
+  },
+  {
+    "filename": "Electrical (10).jpg",
+    "true_class": "Electrical-damage",
+    "predicted_class": "Electrical-damage",
+    "confidence": 0.949,
+    "region_area_percent": 16.68,
+    "severity": "HIGH",
+    "severity_score": 74.9,
+    "explanation": "Electrical-damage detected with 94.9% confidence occupying 16.7% of visual panel area (extensive visual anomaly footprint (>= 15.0%)).",
+    "manual_inspection_recommended": true
+  },
+  {
+    "filename": "Physical (1).jpg",
+    "true_class": "Physical-damage",
+    "predicted_class": "Bird-drop",
+    "confidence": 0.8641,
+    "region_area_percent": 10.89,
+    "severity": "MEDIUM",
+    "severity_score": 38.8,
+    "explanation": "Bird-drop detected with 86.4% confidence occupying 10.9% of visual panel area (moderate focal footprint (8.0%-15.0%)).",
+    "manual_inspection_recommended": false
+  },
+  {
+    "filename": "Physical (19).jpg",
+    "true_class": "Physical-damage",
+    "predicted_class": "Physical-damage",
+    "confidence": 0.3017,
+    "region_area_percent": 7.11,
+    "severity": "LOW",
+    "severity_score": 44.1,
+    "explanation": "Physical-damage detected with 30.2% confidence occupying 7.1% of visual panel area (compact focal region (< 8.0%)). [Warning: Low model confidence (< 60%) \u2014 manual inspection recommended.]",
+    "manual_inspection_recommended": true
+  },
+  {
+    "filename": "Snow (107).jpg",
+    "true_class": "Snow-Covered",
+    "predicted_class": "Snow-Covered",
+    "confidence": 0.9885,
+    "region_area_percent": 29.7,
+    "severity": "HIGH",
+    "severity_score": 67.4,
+    "explanation": "Snow-Covered accumulation detected with 98.8% confidence covering 29.7% of visual panel area (heavy extensive blanket coverage (>= 25.0%)).",
+    "manual_inspection_recommended": true
+  },
+  {
+    "filename": "Snow (108).jpg",
+    "true_class": "Snow-Covered",
+    "predicted_class": "Snow-Covered",
+    "confidence": 0.6222,
+    "region_area_percent": 13.35,
+    "severity": "MEDIUM",
+    "severity_score": 44.1,
+    "explanation": "Snow-Covered accumulation detected with 62.2% confidence covering 13.3% of visual panel area (moderate diffuse coverage (12.0%-25.0%)).",
+    "manual_inspection_recommended": false
+  }
+]
