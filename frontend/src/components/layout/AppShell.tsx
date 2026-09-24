@@ -11,9 +11,9 @@ export function AppShell({ children, breadcrumbs }: AppShellProps) {
   return (
     <div className="min-h-screen bg-surface flex">
       <Sidebar />
-      <div className="pl-72 flex flex-col min-h-screen w-full">
+      <div className="pl-64 flex flex-col min-h-screen w-full">
         <Header breadcrumbs={breadcrumbs} />
-        <main className="relative pt-16 w-full flex-1 bg-surface px-space-lg py-space-md">
+        <main className="relative pt-16 w-full flex-1 bg-surface px-6 py-6 max-w-7xl">
           {children}
         </main>
       </div>

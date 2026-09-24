@@ -2,33 +2,72 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import {
+  Search,
+  ArrowUpDown,
+  RotateCcw,
+  ClipboardCheck,
+  AlertTriangle,
+  UserCheck,
+  Camera,
+} from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
-import { SeverityBadge, UrgencyBadge } from "@/components/common/StatusBadge";
+import { SeverityBadge } from "@/components/common/StatusBadge";
 import { Disclaimer } from "@/components/common/Disclaimer";
 import { useToast } from "@/components/common/Toast";
 import { MOCK_INSPECTIONS } from "@/lib/mock-data";
 import { fetchInspections } from "@/lib/api";
 import { InspectionResponse } from "@/types/inspection";
+import { formatFaultName, formatInspectionDate } from "@/lib/formatters";
+
+const FAULT_OPTIONS: { value: string; label: string }[] = [
+  { value: "ALL", label: "All Faults" },
+  { value: "Clean", label: "Clean" },
+  { value: "Dusty", label: "Dust" },
+  { value: "Bird-drop", label: "Bird Droppings" },
+  { value: "Electrical-damage", label: "Electrical Damage" },
+  { value: "Physical-damage", label: "Physical Damage" },
+  { value: "Snow-Covered", label: "Snow Covered" },
+];
+
+const SEVERITY_OPTIONS = [
+  { value: "ALL", label: "All Severities" },
+  { value: "HIGH", label: "High" },
+  { value: "MEDIUM", label: "Medium" },
+  { value: "LOW", label: "Low" },
+];
 
 export default function InspectionHistoryPage() {
   const { showToast } = useToast();
 
-  const [allInspections, setAllInspections] = useState<InspectionResponse[]>(MOCK_INSPECTIONS);
+  const [allInspections, setAllInspections] = useState<InspectionResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFault, setSelectedFault] = useState("ALL");
   const [selectedSeverity, setSelectedSeverity] = useState("ALL");
-  const [selectedUrgency, setSelectedUrgency] = useState("ALL");
+  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
   useEffect(() => {
     let isMounted = true;
     async function loadData() {
       try {
         const res = await fetchInspections(1, 100);
-        if (isMounted && res?.items && res.items.length > 0) {
-          setAllInspections(res.items);
+        if (isMounted) {
+          if (res?.items && res.items.length > 0) {
+            setAllInspections(res.items);
+          } else {
+            setAllInspections(MOCK_INSPECTIONS);
+          }
         }
-      } catch {
-        // Fallback to MOCK_INSPECTIONS
+      } catch (err) {
+        console.error("Failed to load inspections:", err);
+        if (isMounted) {
+          setAllInspections(MOCK_INSPECTIONS);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     }
     loadData();
@@ -37,432 +76,270 @@ export default function InspectionHistoryPage() {
     };
   }, []);
 
+  // Filter and sort
   const filteredInspections = useMemo(() => {
-    return allInspections.filter((item) => {
+    const filtered = allInspections.filter((item) => {
+      const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
-        searchQuery === "" ||
-        item.panel_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        String(item.inspection_id).toLowerCase().includes(searchQuery.toLowerCase());
+        q === "" ||
+        item.panel_id.toLowerCase().includes(q) ||
+        item.location.toLowerCase().includes(q) ||
+        formatFaultName(item.predicted_class).toLowerCase().includes(q);
 
       const matchesFault =
         selectedFault === "ALL" || item.predicted_class === selectedFault;
 
       const matchesSeverity =
-        selectedSeverity === "ALL" || item.severity === selectedSeverity;
+        selectedSeverity === "ALL" ||
+        (item.severity || "").toUpperCase() === selectedSeverity;
 
-      const matchesUrgency =
-        selectedUrgency === "ALL" || item.urgency === selectedUrgency;
-
-      return matchesSearch && matchesFault && matchesSeverity && matchesUrgency;
+      return matchesSearch && matchesFault && matchesSeverity;
     });
-  }, [allInspections, searchQuery, selectedFault, selectedSeverity, selectedUrgency]);
+
+    // Sort by date
+    return filtered.sort((a, b) => {
+      const dateA = new Date(a.inspection_timestamp).getTime() || 0;
+      const dateB = new Date(b.inspection_timestamp).getTime() || 0;
+      return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+    });
+  }, [allInspections, searchQuery, selectedFault, selectedSeverity, sortOrder]);
+
+  // Derived real metrics
+  const totalCount = allInspections.length;
+  const highSeverityCount = allInspections.filter(
+    (i) => (i.severity || "").toUpperCase() === "HIGH"
+  ).length;
+  const manualReviewCount = allInspections.filter(
+    (i) => i.manual_inspection_recommended
+  ).length;
 
   const handleResetFilters = () => {
     setSearchQuery("");
     setSelectedFault("ALL");
     setSelectedSeverity("ALL");
-    setSelectedUrgency("ALL");
+    setSortOrder("desc");
     showToast("Filters reset to default.");
   };
 
   return (
     <AppShell
       breadcrumbs={[
-        { label: "Asset", href: "/" },
-        { label: "Solar Farm Alpha", href: "/" },
-        { label: "SEC-4", href: "/" },
+        { label: "Dashboard", href: "/" },
         { label: "Inspection History", active: true },
       ]}
     >
-      <div className="flex flex-col w-full gap-space-md">
-        {/* Top Summary & KPI Header */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-space-md items-stretch">
-          <div className="xl:col-span-5 bg-surface-container-lowest p-space-md rounded-lg shadow-sm border border-outline-variant/30 flex flex-col justify-between">
+      <div className="flex flex-col gap-6 w-full">
+        {/* Page Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-on-surface tracking-tight">
+              Inspection History
+            </h1>
+            <p className="text-sm text-on-surface-variant mt-1">
+              Review previous solar panel inspections and recommendations.
+            </p>
+          </div>
+          <Link
+            href="/new-inspection"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-container text-on-primary text-xs font-semibold rounded-lg shadow-sm transition-colors self-start sm:self-auto"
+          >
+            <Camera className="w-4 h-4" />
+            <span>New Inspection</span>
+          </Link>
+        </div>
+
+        {/* Real Summary Metrics Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/30 shadow-sm flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-space-xs font-label-caps text-label-caps text-primary uppercase tracking-widest mb-1">
-                <span className="w-2 h-2 rounded-full bg-secondary"></span>
-                Inspection History &amp; Audit Trail
-              </div>
-              <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">
-                Historical Telemetry Ledger
-              </h1>
-              <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
-                Comprehensive archive of high-resolution optical RGB panel inspections,
-                EfficientNet-B0 anomaly diagnostics, and technician triages.
-              </p>
+              <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider block">
+                Total Inspections
+              </span>
+              <span className="text-2xl font-bold text-on-surface mt-1 block">
+                {isLoading ? "—" : totalCount}
+              </span>
+              <span className="text-xs text-on-surface-variant">
+                {totalCount} inspections recorded
+              </span>
             </div>
-            <div className="flex items-center gap-2 mt-3 flex-wrap">
-              <div className="flex items-center gap-2 px-space-sm py-1 rounded bg-surface-container-low text-on-surface font-body-sm text-body-sm border border-outline-variant/20">
-                <span className="material-symbols-outlined text-primary text-base">
-                  model_training
-                </span>
-                <span>EfficientNet-B0 Baseline</span>
-              </div>
-              <div className="px-space-sm py-1 rounded bg-surface-container-low text-on-surface-variant font-code-id text-code-id border border-outline-variant/20">
-                GET /api/inspections
-              </div>
+            <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+              <ClipboardCheck className="w-5 h-5" />
             </div>
           </div>
 
-          <div className="xl:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
-            {/* 30-Day Criticals */}
-            <div className="bg-surface-container-lowest p-space-md rounded-lg shadow-sm border border-outline-variant/30 flex flex-col justify-between">
-              <div className="flex items-center justify-between">
-                <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">
-                  30-Day Criticals
-                </span>
-                <span className="p-1 rounded bg-error-container text-on-error-container material-symbols-outlined text-sm">
-                  warning
-                </span>
-              </div>
-              <div className="my-space-xs">
-                <div className="font-headline-lg text-headline-lg text-error font-semibold">
-                  142
-                </div>
-                <div className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
-                  <span className="text-error font-semibold">+8.4%</span> vs prior cycle
-                </div>
-              </div>
-              {/* Sparkline mini chart */}
-              <svg
-                className="w-full h-8 text-error"
-                preserveAspectRatio="none"
-                viewBox="0 0 100 25"
-              >
-                <path
-                  d="M0,20 L15,18 L30,12 L45,19 L60,10 L75,14 L90,4 L100,8"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  vectorEffect="non-scaling-stroke"
-                ></path>
-                <path
-                  d="M0,20 L15,18 L30,12 L45,19 L60,10 L75,14 L90,4 L100,8 L100,25 L0,25 Z"
-                  fill="currentColor"
-                  fillOpacity="0.12"
-                ></path>
-              </svg>
+          <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/30 shadow-sm flex items-center justify-between">
+            <div>
+              <span className="text-xs font-semibold text-rose-700 uppercase tracking-wider block">
+                High-Severity Cases
+              </span>
+              <span className="text-2xl font-bold text-rose-600 mt-1 block">
+                {isLoading ? "—" : highSeverityCount}
+              </span>
+              <span className="text-xs text-on-surface-variant">
+                Require priority attention
+              </span>
             </div>
-
-            {/* Mean AI Confidence */}
-            <div className="bg-surface-container-lowest p-space-md rounded-lg shadow-sm border border-outline-variant/30 flex flex-col justify-between">
-              <div className="flex items-center justify-between">
-                <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">
-                  Mean AI Confidence
-                </span>
-                <span className="p-1 rounded bg-primary-fixed text-on-primary-fixed-variant material-symbols-outlined text-sm">
-                  auto_graph
-                </span>
-              </div>
-              <div className="my-space-xs">
-                <div className="font-headline-lg text-headline-lg text-primary font-semibold">
-                  94.3%
-                </div>
-                <div className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
-                  <span className="text-secondary font-semibold">+1.2%</span>{" "}
-                  post-calibration
-                </div>
-              </div>
-              <div className="w-full bg-surface-container h-2 rounded-full overflow-hidden flex">
-                <div className="bg-primary h-full" style={{ width: "78%" }}></div>
-                <div className="bg-secondary h-full" style={{ width: "16%" }}></div>
-                <div className="bg-outline h-full" style={{ width: "6%" }}></div>
-              </div>
+            <div className="w-10 h-10 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600">
+              <AlertTriangle className="w-5 h-5" />
             </div>
+          </div>
 
-            {/* Human Triaged */}
-            <div className="bg-surface-container-lowest p-space-md rounded-lg shadow-sm border border-outline-variant/30 flex flex-col justify-between">
-              <div className="flex items-center justify-between">
-                <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">
-                  Human Triaged
-                </span>
-                <span className="p-1 rounded bg-secondary-container text-on-secondary-container material-symbols-outlined text-sm">
-                  assignment_turned_in
-                </span>
-              </div>
-              <div className="my-space-xs">
-                <div className="font-headline-lg text-headline-lg text-secondary font-semibold">
-                  88.9%
-                </div>
-                <div className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
-                  <span className="text-on-surface-variant">3,418 resolved</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-label-caps font-label-caps text-on-surface-variant">
-                <span>PENDING: 427</span>
-                <span className="text-secondary font-semibold">SLA: 4.2h</span>
-              </div>
+          <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/30 shadow-sm flex items-center justify-between">
+            <div>
+              <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider block">
+                Manual Review Required
+              </span>
+              <span className="text-2xl font-bold text-on-surface mt-1 block">
+                {isLoading ? "—" : manualReviewCount}
+              </span>
+              <span className="text-xs text-on-surface-variant">
+                Recommended for physical check
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
+              <UserCheck className="w-5 h-5" />
             </div>
           </div>
         </div>
 
-        {/* Filter & Search Controller Hub */}
-        <div className="bg-surface-container-lowest rounded-lg p-space-md shadow-sm border border-outline-variant/30 flex flex-col gap-space-sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-space-sm items-center">
-            {/* Search Input */}
-            <div className="xl:col-span-4 relative">
-              <span className="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg">
-                search
-              </span>
-              <input
-                className="h-9 w-full pl-9 pr-8 bg-surface border border-outline-variant/40 rounded text-body-sm font-body-sm text-on-surface placeholder:text-outline-variant focus:outline-none focus:border-primary transition-all"
-                id="search-input"
-                placeholder="Search by Panel ID (e.g. SP-HYD-001) or Location..."
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {searchQuery && (
-                <button
-                  className="absolute right-2.5 top-2.5 text-outline hover:text-on-surface text-sm material-symbols-outlined"
-                  onClick={() => setSearchQuery("")}
-                >
-                  close
-                </button>
-              )}
-            </div>
-
-            {/* Filter: Fault Type */}
-            <div className="xl:col-span-2">
-              <div className="relative">
-                <select
-                  className="h-9 w-full appearance-none pl-3 pr-8 bg-surface border border-outline-variant/40 rounded text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary cursor-pointer"
-                  value={selectedFault}
-                  onChange={(e) => setSelectedFault(e.target.value)}
-                >
-                  <option value="ALL">All Faults</option>
-                  <option value="Bird-drop">Bird-drop</option>
-                  <option value="Clean">Clean</option>
-                  <option value="Dusty">Dusty</option>
-                  <option value="Electrical-damage">Electrical-damage</option>
-                  <option value="Physical-damage">Physical-damage</option>
-                  <option value="Snow-Covered">Snow-Covered</option>
-                </select>
-                <span className="material-symbols-outlined absolute right-2.5 top-2.5 pointer-events-none text-outline text-base">
-                  expand_more
-                </span>
-              </div>
-            </div>
-
-            {/* Filter: Visual Severity */}
-            <div className="xl:col-span-2">
-              <div className="relative">
-                <select
-                  className="h-9 w-full appearance-none pl-3 pr-8 bg-surface border border-outline-variant/40 rounded text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary cursor-pointer"
-                  value={selectedSeverity}
-                  onChange={(e) => setSelectedSeverity(e.target.value)}
-                >
-                  <option value="ALL">All Severities</option>
-                  <option value="LOW">LOW</option>
-                  <option value="MEDIUM">MEDIUM</option>
-                  <option value="HIGH">HIGH</option>
-                </select>
-                <span className="material-symbols-outlined absolute right-2.5 top-2.5 pointer-events-none text-outline text-base">
-                  tune
-                </span>
-              </div>
-            </div>
-
-            {/* Filter: Urgency */}
-            <div className="xl:col-span-2">
-              <div className="relative">
-                <select
-                  className="h-9 w-full appearance-none pl-3 pr-8 bg-surface border border-outline-variant/40 rounded text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary cursor-pointer"
-                  value={selectedUrgency}
-                  onChange={(e) => setSelectedUrgency(e.target.value)}
-                >
-                  <option value="ALL">All Urgencies</option>
-                  <option value="ROUTINE">ROUTINE</option>
-                  <option value="SCHEDULED">SCHEDULED</option>
-                  <option value="PRIORITY">PRIORITY</option>
-                  <option value="IMMEDIATE REVIEW">IMMEDIATE REVIEW</option>
-                </select>
-                <span className="material-symbols-outlined absolute right-2.5 top-2.5 pointer-events-none text-outline text-base">
-                  emergency_home
-                </span>
-              </div>
-            </div>
-
-            {/* Date Range Selector */}
-            <div className="xl:col-span-2">
-              <button
-                onClick={() => showToast("Date filter: Current cycle active.")}
-                className="h-9 w-full flex items-center justify-between px-space-sm bg-surface border border-outline-variant/40 rounded text-body-sm font-body-sm text-on-surface hover:bg-surface-container-low transition-colors"
-              >
-                <div className="flex items-center gap-1.5 truncate">
-                  <span className="material-symbols-outlined text-primary text-base">
-                    date_range
-                  </span>
-                  <span className="truncate font-code-id text-code-id">
-                    Oct 1 - Oct 31, 2023
-                  </span>
-                </div>
-                <span className="material-symbols-outlined text-outline text-sm">
-                  keyboard_arrow_down
-                </span>
-              </button>
-            </div>
+        {/* Filter and Search Bar */}
+        <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/30 shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-outline" />
+            <input
+              type="text"
+              placeholder="Search by panel ID or location..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 text-xs bg-surface border border-outline-variant/40 rounded-lg text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition-colors"
+            />
           </div>
 
-          {/* Active Tags & Export Buttons */}
-          <div className="flex flex-wrap items-center justify-between gap-space-sm pt-2 border-t border-outline-variant/20">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className="font-label-caps text-label-caps text-on-surface-variant uppercase mr-1">
-                Active Scope:
-              </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container font-code-id text-code-id text-on-surface">
-                Date: Last 30 Days
-              </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container font-code-id text-code-id text-on-surface">
-                Modality: High-Res Optical RGB
-              </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-high font-code-id text-code-id text-primary font-semibold">
-                Showing {filteredInspections.length} of {allInspections.length}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
+          {/* Dropdown Filters */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Fault Filter */}
+            <select
+              value={selectedFault}
+              onChange={(e) => setSelectedFault(e.target.value)}
+              className="px-3 py-2 text-xs bg-surface border border-outline-variant/40 rounded-lg text-on-surface focus:outline-none focus:border-primary transition-colors cursor-pointer"
+            >
+              {FAULT_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+
+            {/* Severity Filter */}
+            <select
+              value={selectedSeverity}
+              onChange={(e) => setSelectedSeverity(e.target.value)}
+              className="px-3 py-2 text-xs bg-surface border border-outline-variant/40 rounded-lg text-on-surface focus:outline-none focus:border-primary transition-colors cursor-pointer"
+            >
+              {SEVERITY_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+
+            {/* Sort Toggle */}
+            <button
+              onClick={() =>
+                setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
+              }
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs bg-surface border border-outline-variant/40 rounded-lg text-on-surface hover:bg-surface-container transition-colors"
+              title="Toggle sort order"
+            >
+              <ArrowUpDown className="w-3.5 h-3.5 text-outline" />
+              <span>{sortOrder === "desc" ? "Newest First" : "Oldest First"}</span>
+            </button>
+
+            {/* Reset */}
+            {(searchQuery || selectedFault !== "ALL" || selectedSeverity !== "ALL") && (
               <button
                 onClick={handleResetFilters}
-                className="px-2.5 py-1 text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm"
+                className="inline-flex items-center gap-1 px-2.5 py-2 text-xs text-on-surface-variant hover:text-on-surface transition-colors"
+                title="Reset filters"
               >
-                Reset Filters
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Reset</span>
               </button>
-              <button
-                onClick={() =>
-                  showToast(
-                    `Exported ${filteredInspections.length} inspection records to CSV.`
-                  )
-                }
-                className="px-3 py-1 bg-surface-container-low hover:bg-surface-container text-on-surface rounded font-label-sm text-label-sm flex items-center gap-1 border border-outline-variant/30"
-              >
-                <span className="material-symbols-outlined text-sm">download</span>
-                Export Ledger CSV
-              </button>
-            </div>
+            )}
           </div>
         </div>
 
-        {/* Data Table Card */}
-        <div className="bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col">
+        {/* Inspections Table */}
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm overflow-hidden flex flex-col">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps uppercase border-b border-outline-variant/20">
-                  <th className="py-2.5 px-3">Inspection ID</th>
-                  <th className="py-2.5 px-3">Panel ID</th>
-                  <th className="py-2.5 px-3">Location</th>
-                  <th className="py-2.5 px-3">Anomaly Type</th>
-                  <th className="py-2.5 px-3 text-right">Confidence</th>
-                  <th className="py-2.5 px-3 text-center">Severity</th>
-                  <th className="py-2.5 px-3 text-center">Urgency</th>
-                  <th className="py-2.5 px-3 text-center">Manual Review</th>
-                  <th className="py-2.5 px-3">Timestamp</th>
-                  <th className="py-2.5 px-3 text-right">Actions</th>
+                <tr className="bg-surface-container-low/60 text-on-surface-variant text-xs font-semibold uppercase tracking-wider border-b border-outline-variant/20">
+                  <th className="py-3 px-4">Panel ID</th>
+                  <th className="py-3 px-4">Location</th>
+                  <th className="py-3 px-4">Detected Fault</th>
+                  <th className="py-3 px-4 text-right">Confidence</th>
+                  <th className="py-3 px-4 text-center">Severity</th>
+                  <th className="py-3 px-4">Recommended Action</th>
+                  <th className="py-3 px-4">Date</th>
+                  <th className="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="font-body-md text-body-md text-on-surface divide-y divide-outline-variant/20">
-                {filteredInspections.length === 0 ? (
+              <tbody className="divide-y divide-outline-variant/20">
+                {isLoading ? (
                   <tr>
-                    <td
-                      colSpan={10}
-                      className="py-8 text-center text-on-surface-variant"
-                    >
-                      No inspection records match the current filter criteria.
+                    <td colSpan={8} className="py-8 text-center text-sm text-on-surface-variant">
+                      Loading inspections...
+                    </td>
+                  </tr>
+                ) : filteredInspections.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="py-8 text-center text-sm text-on-surface-variant">
+                      No inspections found matching your filters.
                     </td>
                   </tr>
                 ) : (
                   filteredInspections.map((row) => (
                     <tr
                       key={row.inspection_id}
-                      className="hover:bg-surface-container-low transition-colors group cursor-pointer"
-                      onClick={() =>
-                        showToast(`Selected inspection ${row.inspection_id}`)
-                      }
+                      className="hover:bg-surface-container-low/50 transition-colors"
                     >
-                      <td className="py-3 px-3 font-code-id text-code-id font-semibold text-primary">
-                        <Link
-                          href={`/inspection-result/${row.inspection_id}`}
-                          className="hover:underline"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          #{row.inspection_id}
-                        </Link>
-                      </td>
-                      <td className="py-3 px-3 font-code-id text-code-id font-semibold text-on-surface">
+                      <td className="py-3.5 px-4 font-medium text-primary">
                         <Link
                           href={`/panel-details/${row.panel_id}`}
-                          className="hover:text-primary transition-colors"
-                          onClick={(e) => e.stopPropagation()}
+                          className="hover:underline"
                         >
                           {row.panel_id}
                         </Link>
                       </td>
-                      <td className="py-3 px-3 font-body-sm text-body-sm text-on-surface-variant">
+                      <td className="py-3.5 px-4 text-xs text-on-surface-variant">
                         {row.location}
                       </td>
-                      <td className="py-3 px-3">
-                        <span className="inline-flex items-center gap-1.5 font-medium">
-                          <span
-                            className={`w-2 h-2 rounded-full ${
-                              row.predicted_class === "Electrical-damage"
-                                ? "bg-error"
-                                : row.predicted_class === "Clean"
-                                ? "bg-secondary"
-                                : "bg-outline"
-                            }`}
-                          ></span>
-                          <span
-                            className={
-                              row.predicted_class === "Electrical-damage"
-                                ? "text-error font-semibold"
-                                : row.predicted_class === "Clean"
-                                ? "text-secondary font-semibold"
-                                : "text-on-surface"
-                            }
-                          >
-                            {row.predicted_class}
-                          </span>
+                      <td className="py-3.5 px-4">
+                        <span className="font-medium text-on-surface">
+                          {formatFaultName(row.predicted_class)}
                         </span>
                       </td>
-                      <td className="py-3 px-3 text-right font-code-metric text-code-id text-on-surface font-semibold">
+                      <td className="py-3.5 px-4 text-right font-medium text-on-surface text-xs">
                         {(row.confidence * 100).toFixed(1)}%
                       </td>
-                      <td className="py-3 px-3 text-center">
-                        <SeverityBadge severity={row.severity} />
+                      <td className="py-3.5 px-4 text-center">
+                        <SeverityBadge severity={row.severity} showEstimateHint />
                       </td>
-                      <td className="py-3 px-3 text-center">
-                        <UrgencyBadge urgency={row.urgency} />
+                      <td
+                        className="py-3.5 px-4 text-xs text-on-surface-variant max-w-xs truncate"
+                        title={row.maintenance_action}
+                      >
+                        {row.maintenance_action || "Routine monitoring"}
                       </td>
-                      <td className="py-3 px-3 text-center">
-                        {row.manual_inspection_recommended ? (
-                          <span className="px-1.5 py-0.5 rounded font-label-caps text-label-caps font-bold bg-error-container text-on-error-container">
-                            FLAGGED
-                          </span>
-                        ) : (
-                          <span className="px-1.5 py-0.5 rounded font-label-caps text-label-caps text-on-surface-variant bg-surface-container">
-                            CLEAR
-                          </span>
-                        )}
+                      <td className="py-3.5 px-4 text-xs text-on-surface-variant whitespace-nowrap">
+                        {formatInspectionDate(row.inspection_timestamp)}
                       </td>
-                      <td className="py-3 px-3 font-code-id text-code-id text-on-surface-variant">
-                        {row.inspection_timestamp.includes("T")
-                          ? new Date(row.inspection_timestamp).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "short",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )
-                          : row.inspection_timestamp}
-                      </td>
-                      <td className="py-3 px-3 text-right">
+                      <td className="py-3.5 px-4 text-right">
                         <Link
                           href={`/inspection-result/${row.inspection_id}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-block px-2.5 py-1 bg-surface-container hover:bg-primary hover:text-on-primary text-on-surface rounded font-label-sm text-label-sm transition-colors shadow-sm"
+                          className="inline-flex items-center px-2.5 py-1 text-xs font-semibold text-primary hover:bg-primary/10 rounded-md transition-colors"
                         >
                           View Result
                         </Link>
@@ -474,34 +351,16 @@ export default function InspectionHistoryPage() {
             </table>
           </div>
 
-          {/* Table Footer Pagination */}
-          <div className="p-space-sm bg-surface-container-low flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant border-t border-outline-variant/20">
+          {/* Table Footer */}
+          <div className="p-3.5 bg-surface-container-low/40 border-t border-outline-variant/20 flex items-center justify-between text-xs text-on-surface-variant">
             <span>
-              Displaying {filteredInspections.length} of {MOCK_INSPECTIONS.length}{" "}
-              records
+              Showing {filteredInspections.length} of {allInspections.length} inspection records
             </span>
-            <div className="flex items-center gap-1">
-              <button
-                disabled
-                className="px-2 py-0.5 bg-surface-container-lowest rounded text-on-surface opacity-50 border border-outline-variant/20"
-              >
-                Prev
-              </button>
-              <span className="px-2 font-code-id text-on-surface font-semibold">
-                Page 1 / 1
-              </span>
-              <button
-                disabled
-                className="px-2 py-0.5 bg-surface-container-lowest rounded text-on-surface opacity-50 border border-outline-variant/20"
-              >
-                Next
-              </button>
-            </div>
           </div>
         </div>
 
-        {/* Statutory Disclaimer */}
-        <Disclaimer />
+        {/* Disclaimer */}
+        <Disclaimer variant="compact" />
       </div>
     </AppShell>
   );

@@ -96,18 +96,18 @@ Existing academic work on solar panel fault detection has largely focused on pro
 - **Source**: Kaggle Solar Panel Images Dataset (`pythonafroz`)
 - **Total images**: 885
 - **Classes**: 6 (Bird-drop, Clean, Dusty, Electrical-damage, Physical-damage, Snow-Covered)
-- **Dataset split**: 70% training / 15% validation / 15% test (stratified, hash-deduplicated)
-- **Leakage prevention**: File hash verification confirmed no cross-split duplicates
+- **Dataset split**: 60% training / 20% validation / 20% test (hash-grouped stratified split, seed = 42)
+- **Leakage prevention**: File hash (SHA-256 + MD5) grouping confirmed zero cross-split duplicates
 
 | Class | Count | Train | Val | Test |
 |-------|-------|-------|-----|------|
-| Bird-drop | 226 | 158 | 34 | 34 |
-| Clean | 98 | 69 | 15 | 14 |
-| Dusty | 247 | 173 | 37 | 37 |
-| Electrical-damage | 173 | 121 | 26 | 26 |
-| Physical-damage | 69 | 48 | 10 | 11 |
-| Snow-Covered | 72 | 50 | 11 | 11 |
-| **Total** | **885** | **619** | **133** | **133** |
+| Bird-drop | 207 | 120 | 46 | 41 |
+| Clean | 193 | 115 | 39 | 39 |
+| Dusty | 190 | 114 | 39 | 37 |
+| Electrical-damage | 103 | 64 | 18 | 21 |
+| Physical-damage | 69 | 43 | 13 | 13 |
+| Snow-Covered | 123 | 72 | 25 | 26 |
+| **Total** | **885** | **528 (59.66%)** | **180 (20.34%)** | **177 (20.00%)** |
 
 ### 4.2 Preprocessing Pipeline
 
@@ -282,12 +282,12 @@ Network: solar_net (bridge)
 |--------|:-:|:-:|:-:|
 | Test Accuracy | **85.31%** | 83.05% | 80.23% |
 | Macro F1 | **84.93%** | 83.66% | 78.90% |
-| Weighted F1 | **85.25%** | 83.17% | 79.46% |
-| Macro Precision | 87.34% | 85.88% | 83.42% |
-| Macro Recall | **83.57%** | 82.09% | 76.11% |
-| Parameters | 5.29M | 3.06M | 5.29M |
-| Model Size (MB) | 15.32 | 8.60 | 15.32 |
-| Inference (ms/img) | ~16.10 | **~11.59** | ~16.10 |
+| Weighted F1 | **85.25%** | 83.01% | 79.81% |
+| Macro Precision | **87.34%** | 86.79% | 85.88% |
+| Macro Recall | **83.57%** | 82.16% | 77.01% |
+| Parameters | 4,015,234 | 2,231,558 | 4,015,234 |
+| Model Size (MB) | 15.32 | 8.51 | 15.32 |
+| Inference (ms/img) | ~16.10 | **~11.59** | ~15.72 |
 
 **Key Finding**: EfficientNet-B0 without augmentation is the production baseline. Data augmentation degraded accuracy by 5.08%, demonstrating that synthetic photometric distortions disrupt the subtle visual discriminators critical for surface anomaly classification.
 
@@ -295,12 +295,12 @@ Network: solar_net (bridge)
 
 | Class | Precision | Recall | F1 | Support |
 |-------|-----------|--------|----|---------|
-| Bird-drop | 87.5% | 91.2% | 89.3% | 34 |
-| Clean | 91.7% | 78.6% | 84.6% | 14 |
-| Dusty | 97.3% | 97.3% | 97.3% | 37 |
-| Electrical-damage | 79.2% | 73.1% | 76.0% | 26 |
-| Physical-damage | 80.0% | 61.5% | 69.6% | 11 (low support) |
-| Snow-Covered | 87.5% | 100.0% | 93.3% | 11 |
+| Bird-drop | 77.8% | 85.4% | 81.4% | 41 |
+| Clean | 85.4% | 89.7% | 87.5% | 39 |
+| Dusty | 81.1% | 81.1% | 81.1% | 37 |
+| Electrical-damage | 90.9% | 95.2% | 93.0% | 21 |
+| Physical-damage | 88.9% | 61.5% | 72.7% | 13 (low support) |
+| Snow-Covered | 100.0% | 88.5% | 93.9% | 26 |
 
 Physical-damage has the lowest recall (61.5%) due to limited training samples (69 images total).
 
@@ -308,16 +308,16 @@ Physical-damage has the lowest recall (61.5%) due to limited training samples (6
 
 | Perturbation | Accuracy | Δ vs Baseline |
 |---|---|---|
-| Gaussian Noise | 82.49% | -1.13% |
+| Sensor Noise | 84.75% | +1.13% |
 | Gaussian Blur | 76.84% | **-6.78%** |
-| Reduced Brightness | 78.53% | -5.09% |
-| Increased Brightness | 80.23% | -3.39% |
-| Color Jitter | 82.49% | -1.13% |
-| JPEG Compression | 83.62% | 0.00% |
-| Rotation ±15° | 81.36% | -2.26% |
-| Horizontal Flip | 83.62% | 0.00% |
+| Low Light | 78.53% | -5.09% |
+| High Brightness | 82.49% | -1.13% |
+| High Contrast | 81.92% | -1.70% |
+| JPEG Compression | 84.18% | +0.56% |
+| Small Rotation (±10°) | 83.05% | -0.57% |
+| Low Contrast | 81.36% | -2.26% |
 | Reduced Resolution | **61.02%** | **-22.60%** |
-| Salt and Pepper Noise | 83.62% | 0.00% |
+| Original Benchmark | 83.62% | Baseline |
 
 **Critical finding**: Reduced resolution is the dominant robustness failure mode at -22.60%. Field deployments using drone or distant sensor imagery must maintain sufficient spatial resolution.
 
