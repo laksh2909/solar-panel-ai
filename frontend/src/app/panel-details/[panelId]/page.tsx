@@ -3,17 +3,13 @@
 import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft,
   Camera,
-  ClipboardCheck,
-  AlertTriangle,
   MapPin,
-  Calendar,
   Layers,
   ChevronRight,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
-import { SeverityBadge, UrgencyBadge } from "@/components/common/StatusBadge";
+import { SeverityBadge } from "@/components/common/StatusBadge";
 import { Disclaimer } from "@/components/common/Disclaimer";
 import { MOCK_PANELS, MOCK_PANEL_001_INSPECTIONS } from "@/lib/mock-data";
 import { fetchPanel, fetchPanelInspections } from "@/lib/api";

@@ -2,7 +2,6 @@
 
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Upload, Camera, AlertCircle, CheckCircle2, Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";

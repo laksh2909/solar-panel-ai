@@ -9,12 +9,10 @@ import {
   UserCheck,
   Camera,
   ArrowRight,
-  Filter,
   Search,
-  Cpu,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
-import { SeverityBadge, UrgencyBadge } from "@/components/common/StatusBadge";
+import { SeverityBadge } from "@/components/common/StatusBadge";
 import { Disclaimer } from "@/components/common/Disclaimer";
 import { fetchHealth, fetchPanels, fetchInspections } from "@/lib/api";
 import { InspectionResponse, FaultType } from "@/types/inspection";

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { LayoutGrid, MapPin, ChevronRight, Camera, Search } from "lucide-react";
+import { MapPin, ChevronRight, Camera, Search } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Disclaimer } from "@/components/common/Disclaimer";
 import { fetchPanels } from "@/lib/api";
