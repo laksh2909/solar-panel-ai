@@ -213,21 +213,34 @@ export default function InspectionResultPage({
               Panel Information
             </span>
             <div className="mt-3">
-              <Link
-                href={`/panel-details/${record.panel_id}`}
-                className="text-lg font-bold text-primary hover:underline inline-flex items-center gap-1.5"
-              >
-                <span>{record.panel_id}</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </Link>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Link
+                  href={`/panel-details/${record.panel_id}`}
+                  className="text-lg font-bold text-primary hover:underline inline-flex items-center gap-1.5"
+                >
+                  <span>{record.panel_id}</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </Link>
+                {String(record.panel_id).startsWith("AUTO-") && (
+                  <span className="text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded">
+                    Auto-assigned
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-on-surface-variant mt-1">
                 {record.location}
               </p>
+              {String(record.panel_id).startsWith("AUTO-") && (
+                <p className="text-[10px] text-on-surface-variant mt-1 leading-relaxed">
+                  Automatically assigned — no Panel ID was provided.
+                </p>
+              )}
             </div>
             <div className="mt-3 pt-3 border-t border-outline-variant/20 text-xs text-on-surface-variant">
               Inspected: {formatInspectionDate(record.inspection_timestamp)}
             </div>
           </div>
+
         </div>
 
         {/* Three Visual Panels: Original, AI Attention, Approximate Visual Region */}

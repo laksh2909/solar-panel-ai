@@ -22,8 +22,8 @@ class PanelRepository:
         """Creates and persists a new Panel record."""
         p_id = panel_id.strip()
         loc = location.strip()
-        if not p_id or not loc:
-            raise ValueError("panel_id and location must not be empty.")
+        if not p_id:
+            raise ValueError("panel_id must not be empty.")
 
         panel = Panel(panel_id=p_id, location=loc)
         self.session.add(panel)

@@ -17,8 +17,9 @@ export default function NewInspectionPage() {
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [panelId, setPanelId] = useState("SP-HYD-001");
-  const [location, setLocation] = useState("Block A - Rooftop 1");
+  // Panel ID and Location are OPTIONAL — start empty
+  const [panelId, setPanelId] = useState("");
+  const [location, setLocation] = useState("");
   const [rawFile, setRawFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -77,17 +78,7 @@ export default function NewInspectionPage() {
   };
 
   const handleStartInspection = async () => {
-    const trimmedPanelId = panelId.trim();
-    const trimmedLocation = location.trim();
-
-    if (!trimmedPanelId) {
-      setValidationError("Please enter a Panel ID.");
-      return;
-    }
-    if (!trimmedLocation) {
-      setValidationError("Please enter the panel location.");
-      return;
-    }
+    // Only image is required — Panel ID and Location are OPTIONAL
     if (!rawFile && !previewUrl) {
       setValidationError("Please upload a solar panel image.");
       return;
@@ -107,8 +98,10 @@ export default function NewInspectionPage() {
       }
 
       const formData = new FormData();
-      formData.append("panel_id", trimmedPanelId);
-      formData.append("location", trimmedLocation);
+      // Send panel_id and location as-is (may be empty strings)
+      // The backend will auto-generate panel_id if empty and use fallback location
+      formData.append("panel_id", panelId.trim());
+      formData.append("location", location.trim());
       if (fileToSend) {
         formData.append("file", fileToSend);
         formData.append("image", fileToSend);
@@ -144,7 +137,7 @@ export default function NewInspectionPage() {
               New Inspection
             </h1>
             <p className="text-sm text-on-surface-variant mt-1">
-              Upload a solar panel image to begin the inspection.
+              Upload a solar panel image to begin the AI inspection.
             </p>
           </div>
           <Link
@@ -166,10 +159,11 @@ export default function NewInspectionPage() {
 
         {/* Inspection Form Card */}
         <div className="bg-surface-container-lowest p-6 sm:p-8 rounded-xl border border-outline-variant/30 shadow-sm flex flex-col gap-6">
-          {/* Upload Area */}
+          {/* Upload Area — REQUIRED */}
           <div>
             <label className="block text-sm font-semibold text-on-surface mb-2">
-              Upload Image
+              Upload Image{" "}
+              <span className="text-rose-500 ml-0.5">*</span>
             </label>
 
             <input
@@ -240,41 +234,49 @@ export default function NewInspectionPage() {
             )}
           </div>
 
-          {/* Panel ID & Location Fields */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="panel_id"
-                className="block text-sm font-semibold text-on-surface mb-1.5"
-              >
-                Panel ID
-              </label>
-              <input
-                id="panel_id"
-                type="text"
-                value={panelId}
-                onChange={(e) => setPanelId(e.target.value)}
-                placeholder="e.g. SP-HYD-001"
-                className="w-full px-3.5 py-2 text-sm bg-surface border border-outline-variant/40 rounded-lg text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition-colors font-medium"
-              />
-            </div>
+          {/* Panel ID & Location Fields — OPTIONAL */}
+          <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="panel_id"
+                  className="block text-sm font-semibold text-on-surface mb-1.5"
+                >
+                  Panel ID{" "}
+                  <span className="font-normal text-on-surface-variant text-xs">(Optional)</span>
+                </label>
+                <input
+                  id="panel_id"
+                  type="text"
+                  value={panelId}
+                  onChange={(e) => setPanelId(e.target.value)}
+                  placeholder="e.g. SP-HYD-001"
+                  className="w-full px-3.5 py-2 text-sm bg-surface border border-outline-variant/40 rounded-lg text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition-colors font-medium"
+                />
+              </div>
 
-            <div>
-              <label
-                htmlFor="location"
-                className="block text-sm font-semibold text-on-surface mb-1.5"
-              >
-                Location
-              </label>
-              <input
-                id="location"
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Block A - Rooftop 1"
-                className="w-full px-3.5 py-2 text-sm bg-surface border border-outline-variant/40 rounded-lg text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition-colors"
-              />
+              <div>
+                <label
+                  htmlFor="location"
+                  className="block text-sm font-semibold text-on-surface mb-1.5"
+                >
+                  Location{" "}
+                  <span className="font-normal text-on-surface-variant text-xs">(Optional)</span>
+                </label>
+                <input
+                  id="location"
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="e.g. Block A - Rooftop 1"
+                  className="w-full px-3.5 py-2 text-sm bg-surface border border-outline-variant/40 rounded-lg text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
             </div>
+            <p className="text-xs text-on-surface-variant">
+              Optional — add panel details if you want to track this inspection to a specific panel.
+              If omitted, a unique ID will be auto-assigned and location will be recorded as &quot;Location not specified&quot;.
+            </p>
           </div>
 
           {/* Submit Action */}
@@ -285,7 +287,7 @@ export default function NewInspectionPage() {
             <button
               type="button"
               onClick={handleStartInspection}
-              disabled={isRunning}
+              disabled={isRunning || (!rawFile && !previewUrl)}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-container text-on-primary font-semibold text-sm rounded-lg shadow-sm transition-all disabled:opacity-75 cursor-pointer"
             >
               {isRunning ? (

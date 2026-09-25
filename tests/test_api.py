@@ -98,29 +98,44 @@ class TestFastAPIBackend(unittest.TestCase):
         self.assertEqual(data["status"], "ok")
         self.assertEqual(data["service"], "solar-panel-ai-api")
 
-    def test_03_invalid_panel_metadata_rejected(self):
-        """3. Empty panel_id or location returns HTTP 400."""
+    def test_03_optional_panel_metadata_accepted(self):
+        """3. Empty panel_id and location are now OPTIONAL — request must succeed with auto-generated values."""
         dummy_img = io.BytesIO()
         Image.new("RGB", (50, 50), color="blue").save(dummy_img, format="JPEG")
         dummy_img.seek(0)
 
-        # Empty panel_id
+        # Empty panel_id — should auto-generate AUTO-NNN and succeed
         res = self.client.post(
             "/api/inspect",
-            data={"panel_id": "   ", "location": "Rooftop 1"},
+            data={"panel_id": "", "location": ""},
             files={"file": ("test.jpg", dummy_img.getvalue(), "image/jpeg")},
         )
-        self.assertEqual(res.status_code, 400)
-        self.assertIn("panel_id cannot be empty", res.json()["detail"])
+        self.assertEqual(res.status_code, 201, f"Expected 201 but got {res.status_code}: {res.text}")
+        data = res.json()
+        # panel_id must start with AUTO- (auto-generated)
+        self.assertTrue(
+            data["panel_id"].startswith("AUTO-"),
+            f"Expected AUTO- prefix, got: {data['panel_id']}"
+        )
+        # location must be the fallback value
+        self.assertEqual(data["location"], "Location not specified")
 
-        # Empty location
-        res = self.client.post(
+        # Whitespace-only panel_id — should also auto-generate
+        dummy_img2 = io.BytesIO()
+        Image.new("RGB", (50, 50), color="red").save(dummy_img2, format="JPEG")
+        dummy_img2.seek(0)
+        res2 = self.client.post(
             "/api/inspect",
-            data={"panel_id": "SP-001", "location": ""},
-            files={"file": ("test.jpg", dummy_img.getvalue(), "image/jpeg")},
+            data={"panel_id": "   ", "location": ""},
+            files={"file": ("test2.jpg", dummy_img2.getvalue(), "image/jpeg")},
         )
-        self.assertEqual(res.status_code, 400)
-        self.assertIn("location cannot be empty", res.json()["detail"])
+        self.assertEqual(res2.status_code, 201, f"Expected 201 but got {res2.status_code}: {res2.text}")
+        data2 = res2.json()
+        self.assertTrue(
+            data2["panel_id"].startswith("AUTO-"),
+            f"Expected AUTO- prefix, got: {data2['panel_id']}"
+        )
+
 
     def test_04_invalid_image_upload_rejected(self):
         """4. Corrupt file or non-image returns HTTP 400."""

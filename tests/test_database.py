@@ -83,10 +83,13 @@ class TestDatabaseLayer(unittest.TestCase):
             create_panel(self.session, panel_id="SP-HYD-001", location="Block B")
 
     def test_03_empty_panel_fields_rejection(self):
-        """3. Empty panel_id or location is rejected by repository and constraints."""
+        """3. Empty panel_id is rejected by repository; whitespace-only location is rejected by DB constraint."""
+        from sqlalchemy.exc import IntegrityError
         with self.assertRaises(ValueError):
             create_panel(self.session, panel_id="", location="Block A")
-        with self.assertRaises(ValueError):
+        # Whitespace-only location is caught by the DB CHECK constraint (ck_panels_location_nonempty)
+        # The repository no longer raises ValueError for location; the DB IntegrityError fires instead
+        with self.assertRaises(IntegrityError):
             create_panel(self.session, panel_id="SP-001", location="   ")
 
     def test_04_inspection_creation_and_foreign_key(self):

@@ -193,9 +193,9 @@ export async function submitInspection(
       API_BASE_URL,
       "- using simulated fallback."
     );
-    const panelId = (formData.get("panel_id") as string) || "SP-HYD-001";
+    const panelId = (formData.get("panel_id") as string)?.trim() || "AUTO-DEMO";
     const location =
-      (formData.get("location") as string) || "Block A - Rooftop 1";
+      (formData.get("location") as string)?.trim() || "Location not specified";
 
     return {
       ...MOCK_INSPECTIONS[0],

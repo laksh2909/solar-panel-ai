@@ -110,33 +110,42 @@ def get_health():
 )
 async def inspect_panel(
     file: UploadFile = File(..., description="Solar panel image (JPEG, PNG, WEBP, BMP)"),
-    panel_id: str = Form(default="", description="Unique alphanumeric panel identifier (e.g. SP-HYD-001)"),
-    location: str = Form(default="", description="Facility site or array location description"),
+    panel_id: str = Form(default="", description="Optional panel identifier (e.g. SP-HYD-001). Auto-generated if omitted."),
+    location: str = Form(default="", description="Optional facility site or array location description"),
     db: Session = Depends(get_db),
 
 ):
     """
     Performs visual inspection on an uploaded panel image:
-    1. Validates panel metadata and image format.
+    1. Validates image format (panel_id and location are OPTIONAL).
     2. Runs canonical preprocessing, EfficientNet-B0 prediction, and Grad-CAM.
     3. Calculates approximate fault region and visual severity.
     4. Triages actionable maintenance recommendation and urgency.
     5. Persists inspection record and returns complete diagnostic response.
-    """
-    # 1. Metadata validation
-    stripped_id = (panel_id or "").strip()
-    if not stripped_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="panel_id cannot be empty or whitespace only.",
-        )
 
-    stripped_loc = (location or "").strip()
-    if not stripped_loc:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="location cannot be empty or whitespace only.",
-        )
+    If panel_id is not provided, an AUTO-NNN identifier is generated automatically.
+    If location is not provided, 'Location not specified' is used as the fallback.
+    """
+    # 1. Optional metadata handling
+    stripped_id = (panel_id or "").strip()
+    stripped_loc = (location or "").strip() or "Location not specified"
+
+    # Auto-generate a unique panel ID when user omits it
+    if not stripped_id:
+        panel_repo_check = PanelRepository(db)
+        auto_count = db.scalar(
+            select(func.count()).where(Panel.panel_id.like("AUTO-%"))
+        ) or 0
+        candidate_num = auto_count + 1
+        # Ensure the candidate does not already exist
+        while True:
+            candidate_id = f"AUTO-{candidate_num:03d}"
+            existing = panel_repo_check.get_panel(candidate_id)
+            if not existing:
+                break
+            candidate_num += 1
+        stripped_id = candidate_id
+        logger.info(f"No panel_id provided — auto-generated: {stripped_id}")
 
     # 2. Image reading and validation
     try:
