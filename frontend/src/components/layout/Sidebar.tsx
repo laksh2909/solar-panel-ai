@@ -71,7 +71,7 @@ export function Sidebar() {
   }, []);
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest border-r border-outline-variant/30 z-50 flex flex-col justify-between">
+    <aside className="hidden md:flex fixed left-0 top-0 h-full w-64 bg-surface-container-lowest border-r border-outline-variant/30 z-50 flex-col justify-between">
       <div className="flex flex-col">
         {/* Brand Header */}
         <div className="h-16 px-5 flex items-center border-b border-outline-variant/20">

@@ -43,6 +43,7 @@ class InspectionResponse(BaseModel):
     severity: str
     urgency: str
     maintenance_action: str
+    maintenance_actions: List[str] = Field(default_factory=list)
     manual_inspection_recommended: bool
     confidence_warning: Optional[str] = None
 

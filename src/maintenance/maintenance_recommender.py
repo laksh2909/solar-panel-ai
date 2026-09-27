@@ -12,22 +12,138 @@ eligibility, or prescribe repairs. It does not replace qualified electrical,
 thermal, structural, or physical inspection.
 """
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class MaintenanceRecommender:
-    """
-    Rule-based recommender mapping visual diagnostic findings to workflow actions.
-    """
+    """Rule-based recommender mapping visual diagnostic findings to workflow actions."""
 
     VALID_URGENCIES = {"ROUTINE", "SCHEDULED", "PRIORITY", "IMMEDIATE_REVIEW"}
     VALID_SEVERITIES = {"LOW", "MEDIUM", "HIGH"}
 
-    def __init__(
-        self,
-        low_confidence_threshold: float = 0.60,
-    ):
+    def __init__(self, low_confidence_threshold: float = 0.60):
         self.low_conf_thresh = low_confidence_threshold
+
+    def _build_action_list(
+        self,
+        predicted_class: str,
+        severity: str,
+        manual_flag: bool,
+    ) -> List[str]:
+        """Return a 2-3 item action list tuned to the predicted fault and severity."""
+        cls_name = predicted_class.strip()
+        sev = severity.strip().upper()
+
+        if cls_name == "Clean":
+            base = [
+                "Continue routine visual monitoring of the panel surface.",
+                "Keep the panel area maintained according to the site's normal cleaning schedule.",
+                "Reinspect periodically for newly visible faults or debris accumulation.",
+            ]
+            if sev == "HIGH":
+                base[0] = "Increase routine monitoring of the panel surface."
+            return base[:3]
+
+        if cls_name == "Bird-drop":
+            if sev == "LOW":
+                return [
+                    "Schedule routine cleaning of the affected panel surface.",
+                    "Inspect the panel after cleaning for any remaining contamination or damage.",
+                    "Recheck the panel during the next standard inspection cycle.",
+                ]
+            if sev == "MEDIUM":
+                return [
+                    "Arrange targeted cleaning of the affected area.",
+                    "Inspect the panel after cleaning for any remaining soiling or visible damage.",
+                    "Schedule a follow-up check to confirm the surface remains clear.",
+                ]
+            return [
+                "Prioritize cleaning of the affected panel area using an approved procedure.",
+                "Inspect the cleaned surface for any residual contamination or visible degradation.",
+                "Document the cleaning outcome and schedule a follow-up review after maintenance.",
+            ]
+
+        if cls_name == "Dusty":
+            if sev == "LOW":
+                return [
+                    "Schedule cleaning of the affected panel surface.",
+                    "Inspect the panel after cleaning to confirm that the visibility issue is reduced.",
+                    "Monitor the panel during the next standard inspection cycle.",
+                ]
+            if sev == "MEDIUM":
+                return [
+                    "Arrange a scheduled cleaning of the affected area.",
+                    "Inspect the panel after cleaning to confirm the soiling has been removed.",
+                    "Prioritize a follow-up inspection to verify output stability after cleaning.",
+                ]
+            return [
+                "Prioritize cleaning of the affected panel surface.",
+                "Inspect the panel after cleaning for any remaining dust or surface degradation.",
+                "Document the maintenance outcome and conduct a follow-up inspection after service.",
+            ]
+
+        if cls_name == "Snow-Covered":
+            if sev == "LOW":
+                return [
+                    "Arrange safe snow removal using an appropriate site procedure.",
+                    "Inspect the panel after snow removal for any visible damage.",
+                    "Perform a follow-up inspection once the surface is clear.",
+                ]
+            if sev == "MEDIUM":
+                return [
+                    "Arrange a safe snow-clearance procedure for the affected area.",
+                    "Inspect the panel after clearing to confirm there is no visible damage or residue.",
+                    "Schedule a follow-up review once the module surface is fully clear.",
+                ]
+            return [
+                "Prioritize safe snow-removal and visual review for the affected module.",
+                "Inspect the panel immediately after clearing to verify the surface remains undamaged.",
+                "Perform a follow-up assessment after the site has returned to normal operating conditions.",
+            ]
+
+        if cls_name == "Electrical-damage":
+            if sev == "LOW":
+                return [
+                    "Schedule a qualified electrical technician inspection for the affected panel area.",
+                    "Inspect visible module connections and nearby components for signs of electrical damage.",
+                    "Document the findings and arrange a follow-up assessment after any corrective work.",
+                ]
+            if sev == "MEDIUM":
+                return [
+                    "Prioritize a qualified electrical inspection of the affected panel area.",
+                    "Inspect visible module connections and affected components for signs of electrical degradation.",
+                    "Document the findings and schedule a follow-up review after corrective action is complete.",
+                ]
+            return [
+                "Arrange an immediate qualified electrical specialist inspection for the affected panel area.",
+                "Inspect visible module connections and adjacent components for signs of electrical damage or severe degradation.",
+                "Document the findings and perform a follow-up review after corrective work is completed.",
+            ]
+
+        if cls_name == "Physical-damage":
+            if sev == "LOW":
+                return [
+                    "Schedule a qualified physical inspection of the affected panel.",
+                    "Document the visible damaged area and check for additional surface damage.",
+                    "Perform a follow-up assessment to determine whether further maintenance is required.",
+                ]
+            if sev == "MEDIUM":
+                return [
+                    "Prioritize a qualified physical inspection of the affected panel.",
+                    "Document the visible damaged area and check for additional structural or surface damage.",
+                    "Schedule a follow-up assessment to verify whether further maintenance is needed.",
+                ]
+            return [
+                "Arrange an immediate specialist inspection of the affected panel area.",
+                "Document the visible damage and verify whether adjacent panel sections show additional deterioration.",
+                "Perform a follow-up assessment to confirm whether replacement or further corrective action is required.",
+            ]
+
+        return [
+            "Schedule a qualified visual inspection of the affected panel.",
+            "Inspect the panel area for any additional visible faults or anomalies.",
+            "Reassess the condition during the next scheduled inspection cycle.",
+        ]
 
     def get_recommendation(
         self,
@@ -52,6 +168,7 @@ class MaintenanceRecommender:
                 - predicted_class: str
                 - severity: str
                 - recommended_action: str
+                - maintenance_actions: List[str]
                 - urgency: str ("ROUTINE" | "SCHEDULED" | "PRIORITY" | "IMMEDIATE_REVIEW")
                 - reason: str
                 - manual_inspection_recommended: bool
@@ -74,9 +191,8 @@ class MaintenanceRecommender:
             )
             manual_flag = True
 
-        # Rule evaluation per class
         if cls_name == "Clean":
-            action = "no fault-specific maintenance indicated; continue routine monitoring"
+            action = "continue routine monitoring"
             urgency = "ROUTINE"
             reason = (
                 "Module surface is clean with no active fault signatures; "
@@ -98,7 +214,7 @@ class MaintenanceRecommender:
                     f"Moderate bird dropping footprint ({area_pct:.1f}% visual area); "
                     "requires targeted cleaning to prevent localized hot-spot formation."
                 )
-            else:  # HIGH
+            else:
                 action = "prioritize cleaning and inspection"
                 urgency = "PRIORITY"
                 manual_flag = True
@@ -122,7 +238,7 @@ class MaintenanceRecommender:
                     f"Moderate diffuse dust accumulation ({area_pct:.1f}% visual area); "
                     "washing recommended at next maintenance cycle."
                 )
-            else:  # HIGH
+            else:
                 action = "prioritize cleaning and follow-up inspection"
                 urgency = "PRIORITY"
                 manual_flag = True
@@ -146,7 +262,7 @@ class MaintenanceRecommender:
                     f"Partial snow accumulation ({area_pct:.1f}% visual area); "
                     "assess array clearing based on site conditions."
                 )
-            else:  # HIGH
+            else:
                 action = "prioritize safe snow-removal/inspection"
                 urgency = "PRIORITY"
                 manual_flag = True
@@ -171,7 +287,7 @@ class MaintenanceRecommender:
                     f"Moderate electrical burn/hotspot footprint ({area_pct:.1f}% visual area); "
                     "potential safety and performance hazard requiring qualified technician."
                 )
-            else:  # HIGH
+            else:
                 action = "immediate specialist inspection recommended"
                 urgency = "IMMEDIATE_REVIEW"
                 manual_flag = True
@@ -196,7 +312,7 @@ class MaintenanceRecommender:
                     f"Moderate structural fracture or glass crack ({area_pct:.1f}% visual area); "
                     "risk of moisture ingress requiring priority technician review."
                 )
-            else:  # HIGH
+            else:
                 action = "immediate specialist inspection recommended"
                 urgency = "IMMEDIATE_REVIEW"
                 manual_flag = True
@@ -206,16 +322,18 @@ class MaintenanceRecommender:
                 )
 
         else:
-            # Fallback for unexpected class
             action = "schedule visual verification"
             urgency = "SCHEDULED"
             reason = f"Unrecognized category {cls_name}; manual verification required."
             manual_flag = True
 
+        maintenance_actions = self._build_action_list(cls_name, sev, manual_flag)
+
         return {
             "predicted_class": cls_name,
             "severity": sev,
             "recommended_action": action,
+            "maintenance_actions": maintenance_actions,
             "urgency": urgency,
             "reason": reason,
             "manual_inspection_recommended": manual_flag,

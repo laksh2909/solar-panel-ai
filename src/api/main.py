@@ -28,6 +28,7 @@ from src.api.schemas import (
 from src.api.service import InspectionService
 from src.database.database import get_db, init_db
 from src.database.models import Inspection, Panel
+from src.maintenance.maintenance_recommender import MaintenanceRecommender
 from src.database.repository import (
     InspectionRepository,
     PanelRepository,
@@ -42,6 +43,25 @@ from src.database.repository import (
 from src.utils.logger import setup_logger
 
 logger = setup_logger("fastapi_main")
+recommender = MaintenanceRecommender()
+
+
+def _response_maintenance_actions(
+    predicted_class: str,
+    confidence: float,
+    severity: str,
+    region_area_percent: float,
+    manual_inspection_recommended: bool,
+) -> List[str]:
+    """Backfill 2-3 maintenance actions for legacy inspection records."""
+    rec = recommender.get_recommendation(
+        predicted_class=predicted_class,
+        confidence=confidence,
+        severity=severity,
+        region_area_percent=region_area_percent,
+        manual_inspection_recommended=manual_inspection_recommended,
+    )
+    return rec.get("maintenance_actions", [rec.get("recommended_action", "Continue routine monitoring.")])
 
 
 @asynccontextmanager
@@ -212,6 +232,7 @@ async def inspect_panel(
         severity=inspection.severity,
         urgency=inspection.urgency,
         maintenance_action=inspection.maintenance_action,
+        maintenance_actions=diag["maintenance_actions"],
         manual_inspection_recommended=inspection.manual_inspection_recommended,
         confidence_warning=inspection.confidence_warning,
     )
@@ -299,6 +320,13 @@ def get_panel_inspections(
             severity=i.severity,
             urgency=i.urgency,
             maintenance_action=i.maintenance_action,
+            maintenance_actions=_response_maintenance_actions(
+                predicted_class=i.predicted_class,
+                confidence=i.confidence,
+                severity=i.severity,
+                region_area_percent=i.visual_region_area_percent,
+                manual_inspection_recommended=i.manual_inspection_recommended,
+            ),
             manual_inspection_recommended=i.manual_inspection_recommended,
             confidence_warning=i.confidence_warning,
         )
@@ -337,6 +365,13 @@ def get_all_inspections(
             severity=i.severity,
             urgency=i.urgency,
             maintenance_action=i.maintenance_action,
+            maintenance_actions=_response_maintenance_actions(
+                predicted_class=i.predicted_class,
+                confidence=i.confidence,
+                severity=i.severity,
+                region_area_percent=i.visual_region_area_percent,
+                manual_inspection_recommended=i.manual_inspection_recommended,
+            ),
             manual_inspection_recommended=i.manual_inspection_recommended,
             confidence_warning=i.confidence_warning,
         )
@@ -385,6 +420,13 @@ def get_inspection_by_id(
         severity=insp.severity,
         urgency=insp.urgency,
         maintenance_action=insp.maintenance_action,
+        maintenance_actions=_response_maintenance_actions(
+            predicted_class=insp.predicted_class,
+            confidence=insp.confidence,
+            severity=insp.severity,
+            region_area_percent=insp.visual_region_area_percent,
+            manual_inspection_recommended=insp.manual_inspection_recommended,
+        ),
         manual_inspection_recommended=insp.manual_inspection_recommended,
         confidence_warning=insp.confidence_warning,
     )

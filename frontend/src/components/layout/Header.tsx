@@ -35,7 +35,7 @@ export function Header({ breadcrumbs }: HeaderProps) {
   }, []);
 
   return (
-    <header className="fixed top-0 left-64 right-0 h-16 bg-surface-container-lowest/95 backdrop-blur-sm border-b border-outline-variant/30 z-40 px-6 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 h-16 bg-surface-container-lowest/95 backdrop-blur-sm border-b border-outline-variant/30 z-40 px-4 flex items-center justify-between md:left-64 md:px-6">
       {/* Left: Title or Clean Breadcrumbs */}
       <div className="flex items-center gap-3">
         {breadcrumbs && breadcrumbs.length > 0 ? (

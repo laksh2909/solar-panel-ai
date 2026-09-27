@@ -33,6 +33,7 @@ export interface InspectionResponse {
   severity: SeverityLevel;
   urgency: UrgencyLevel;
   maintenance_action: string;
+  maintenance_actions?: string[];
   manual_inspection_recommended: boolean;
   confidence_warning?: string | null;
   // Visual feature & explainability metadata

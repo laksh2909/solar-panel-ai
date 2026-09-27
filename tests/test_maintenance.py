@@ -139,7 +139,19 @@ class TestMaintenanceRecommender(unittest.TestCase):
         self.assertIsNotNone(res["confidence_warning"])
         self.assertIn("below 60%", res["confidence_warning"])
 
-    def test_11_checkpoint_integrity_unmodified(self):
+    def test_11_maintenance_action_list_contains_2_to_3_items(self):
+        """11. The recommendation engine returns a structured action list with 2-3 items."""
+        electrical = self.recommender.get_recommendation("Electrical-damage", 0.95, "HIGH", 20.0)
+        dusty = self.recommender.get_recommendation("Dusty", 0.90, "LOW", 5.0)
+        clean = self.recommender.get_recommendation("Clean", 0.98, "LOW", 0.0)
+
+        for res in [electrical, dusty, clean]:
+            self.assertIn("maintenance_actions", res)
+            self.assertGreaterEqual(len(res["maintenance_actions"]), 2)
+            self.assertLessEqual(len(res["maintenance_actions"]), 3)
+            self.assertTrue(all(item.strip() for item in res["maintenance_actions"]))
+
+    def test_12_checkpoint_integrity_unmodified(self):
         """11. Checkpoint remains unmodified."""
         with open(self.ckpt_path, "rb") as f:
             h = hashlib.sha256(f.read()).hexdigest()

@@ -168,6 +168,7 @@ class InspectionService:
             "severity": rec_info["severity"],
             "urgency": rec_info["urgency"],
             "maintenance_action": rec_info["recommended_action"],
+            "maintenance_actions": rec_info["maintenance_actions"],
             "manual_inspection_recommended": rec_info["manual_inspection_recommended"],
             "confidence_warning": rec_info["confidence_warning"],
             "inspection_timestamp": datetime.now(timezone.utc).isoformat(),
