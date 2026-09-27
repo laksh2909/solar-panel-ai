@@ -34,7 +34,7 @@ graph TD
         subgraph Storage_Subsystem["Data Persistence Layer"]
             Repo["SQLAlchemy Repository Engine"]
             SQLite[("Local SQLite Database (solar_panel_ai.db)")]
-            Postgres[("Enterprise PostgreSQL (Optional Cloud DB)")]
+            Postgres[("PostgreSQL compatibility prepared (not live-validated)")]
             
             Maint --> Repo
             Repo --> SQLite
@@ -79,8 +79,8 @@ graph TD
 
 ### 2.4 Data Persistence Tier
 - **ORM Layer**: SQLAlchemy declarative mapping separating domain entities from database drivers.
-- **Default Local Storage**: SQLite file-based database (`data/solar_panel_ai.db`).
-- **Production PostgreSQL Compatibility**: Architecture uses dialect-agnostic queries and psycopg driver compatibility, allowing seamless migration to PostgreSQL by setting the `DATABASE_URL` environment variable:
+- **Validated Local Storage**: SQLite file-based database (`data/solar_panel_ai.db`).
+- **PostgreSQL Compatibility Prepared**: Architecture uses dialect-agnostic queries and psycopg driver compatibility, allowing later migration to PostgreSQL by setting the `DATABASE_URL` environment variable. The validated environment used SQLite; live PostgreSQL validation was not performed.
   ```bash
   DATABASE_URL=postgresql+psycopg://username:password@db-host:5432/solar_panel_ai
   ```

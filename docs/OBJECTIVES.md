@@ -54,7 +54,7 @@ Implement a decision-logic engine mapping diagnostic outputs to standardized mai
 Associate individual inspection records with physical solar asset metadata, including unique Panel IDs, string/array identifiers, physical facility location strings, geographical coordinates (latitude/longitude), and commissioning dates.
 
 ### Objective 10: Relational Inspection History Persistence
-Develop an enterprise-ready database schema using SQLAlchemy to persist panel records and inspection history logs. Validate the schema using a lightweight local SQLite database while maintaining full architectural compatibility with production PostgreSQL servers.
+Develop a relational database schema using SQLAlchemy to persist panel records and inspection history logs. Validate the schema using a lightweight local SQLite database while maintaining compatibility with PostgreSQL for later deployment work.
 
 ### Objective 11: Interactive Full-Stack Web Application
 Engineer a modern, user-friendly microservices web interface:
@@ -62,4 +62,4 @@ Engineer a modern, user-friendly microservices web interface:
 - **Next.js 16 Web Application**: Responsive frontend providing operational dashboards, drag-and-drop inspection studios, side-by-side Grad-CAM visualization, and historical inspection search/filtering.
 
 ### Objective 12: Production Packaging and Deployment Preparation
-Package the complete system into modular, multi-stage Docker containers using Docker Compose. Prepare and locally validate deployment configurations for cloud virtual machines (specifically Amazon Web Services EC2 Ubuntu instances) without incurring cloud hosting expenses.
+Package the complete system into modular, multi-stage Docker containers using Docker Compose. Prepare and locally validate deployment configurations for cloud virtual machines (specifically Amazon Web Services EC2 Ubuntu instances) without incurring cloud hosting expenses. No live AWS deployment was performed.

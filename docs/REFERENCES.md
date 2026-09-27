@@ -1,6 +1,6 @@
 # References
 
-This document lists the key references, frameworks, libraries, and datasets used in the project. Where exact bibliographic details (DOI, page numbers, publisher) could not be confirmed from project artifacts, they are marked with `[VERIFY]` for manual verification before submission.
+This document lists the key references, frameworks, libraries, and datasets used in the project. Where exact bibliographic details (DOI, page numbers, publisher, or license terms) could not be confidently confirmed from the repository, they are marked with `TODO: verify citation metadata` rather than being presented as final published details.
 
 ---
 
@@ -9,7 +9,7 @@ This document lists the key references, frameworks, libraries, and datasets used
 **[1]** SparkNet Solar Panel Fault Detection  
 Title: *SparkNet — A Solar Panel Fault Detection Deep Learning Model*  
 Published in: IEEE Access, 2025  
-`[VERIFY: Full author list, exact issue number, DOI, page range]`  
+`TODO: verify citation metadata`
 - This paper serves as the reference architecture for the **SparkNet-A** dual-branch convolutional model evaluated in this project.
 - The paper also describes the benchmark solar panel image dataset and the six-class classification problem formulation.
 
@@ -22,7 +22,7 @@ Platform: Kaggle
 URL: [https://www.kaggle.com/datasets/pythonafroz/solar-panel-images](https://www.kaggle.com/datasets/pythonafroz/solar-panel-images)  
 Contributor: pythonafroz  
 Description: 885 labeled solar panel images across six condition classes (Bird-drop, Clean, Dusty, Electrical-damage, Physical-damage, Snow-Covered).  
-`[VERIFY: Original data collection source, collection date, license terms]`
+`TODO: verify citation metadata`
 
 ---
 
@@ -33,7 +33,7 @@ Authors: Paszke, A., Gross, S., Massa, F., et al.
 Title: *PyTorch: An Imperative Style, High-Performance Deep Learning Library*  
 Published in: Advances in Neural Information Processing Systems (NeurIPS), 2019  
 URL: [https://pytorch.org](https://pytorch.org)  
-`[VERIFY: Exact citation format, volume, page numbers]`
+`TODO: verify citation metadata`
 
 **[4]** torchvision  
 Title: torchvision — PyTorch Image and Video Datasets, Transforms, and Model Zoo  
@@ -44,13 +44,13 @@ Used for: Pre-trained EfficientNet-B0, MobileNetV2 model weights (ImageNet-1K), 
 Authors: Tan, M., Le, Q.V.  
 Title: *EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks*  
 Published in: International Conference on Machine Learning (ICML), 2019  
-`[VERIFY: Proceedings volume, pages, arXiv preprint ID if citing preprint]`
+`TODO: verify citation metadata`
 
 **[6]** MobileNetV2  
 Authors: Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., Chen, L.-C.  
 Title: *MobileNetV2: Inverted Residuals and Linear Bottlenecks*  
 Published in: IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2018  
-`[VERIFY: Proceedings volume, pages, DOI]`
+`TODO: verify citation metadata`
 
 ---
 
@@ -60,7 +60,7 @@ Published in: IEEE Conference on Computer Vision and Pattern Recognition (CVPR),
 Authors: Selvaraju, R.R., Cogswell, M., Das, A., Vedantam, R., Parikh, D., Batra, D.  
 Title: *Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization*  
 Published in: International Journal of Computer Vision (IJCV), 2020 (conference version: ICCV 2017)  
-`[VERIFY: DOI, exact journal volume and issue number, page numbers]`  
+`TODO: verify citation metadata`
 URL: [https://arxiv.org/abs/1610.02391](https://arxiv.org/abs/1610.02391)
 
 ---
@@ -78,7 +78,7 @@ Authors: Buslaev, A., Iglovikov, V.I., Khvedchenya, E., Parinov, A., Druzhinin, 
 Title: *Albumentations: Fast and Flexible Image Augmentations*  
 Published in: Information, 2020, Vol. 11, No. 2  
 URL: [https://albumentations.ai](https://albumentations.ai)  
-`[VERIFY: DOI, page numbers]`  
+`TODO: verify citation metadata`
 Used for: Domain-specific augmentation pipeline in `src/preprocessing/augmentation.py` and canonical deterministic resizing in evaluation.
 
 ---
@@ -148,5 +148,5 @@ Note: AWS EC2 deployment was prepared and locally validated. No live deployment 
 ---
 
 ## Notes on References
-- References marked `[VERIFY]` require manual lookup to confirm exact bibliographic details (DOI, page numbers, authors) before formal submission.
-- Do not use the approximate citation details above in formal academic bibliography submissions without cross-checking against the original published sources (IEEE Xplore, ACM Digital Library, arXiv, or Google Scholar).
+- References marked `TODO: verify citation metadata` should be checked against the original publication details before formal academic submission.
+- Do not treat the approximate reference details above as final bibliographic records without cross-checking the original published sources (IEEE Xplore, ACM Digital Library, arXiv, or Google Scholar).

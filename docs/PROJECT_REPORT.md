@@ -32,7 +32,7 @@ The system addresses six canonical module conditions: **Clean**, **Bird-drop**, 
 
 To ensure transparency for operations and maintenance personnel, the network integrates **Grad-CAM** (Gradient-weighted Class Activation Mapping) to generate visual saliency attention maps. These are processed through an approximate visual fault-region analysis pipeline that extracts bounding boxes, centroid coordinates, and surface area coverage percentages. Derived heuristic rules produce an AI-assisted visual severity triage grade and prescriptive maintenance workflow guidance.
 
-The machine learning pipeline is packaged into a production-grade microservices architecture featuring a **FastAPI** REST backend, a **Next.js 16** web frontend with real-time inspection studio and history visualization, and an **SQLAlchemy** database abstraction validated for both SQLite and PostgreSQL. The system is fully containerized via **Docker** and **Docker Compose**, backed by a 169-test regression suite, and validated with deployment blueprints for Amazon Web Services (AWS) EC2.
+The machine learning pipeline is packaged into a local CPU-based engineering prototype featuring a **FastAPI** REST backend, a **Next.js 16** web frontend with real-time inspection studio and history visualization, and an **SQLAlchemy** database abstraction validated on SQLite. PostgreSQL compatibility was prepared, but live PostgreSQL credentials were not available for operational validation. The system is fully containerized via **Docker** and **Docker Compose**, backed by a 169-test regression suite, and includes AWS EC2 deployment artifacts that were locally validated but not live-deployed.
 
 > [!NOTE]
 > The system operates strictly as an image-based visual decision-support tool. It does not measure direct electrical characteristics, internal junction temperatures, or subsurface micro-crack depths.
@@ -304,22 +304,22 @@ Network: solar_net (bridge)
 
 Physical-damage has the lowest recall (61.5%) due to limited training samples (69 images total).
 
-### 6.3 Robustness Testing (EfficientNet-B0 Baseline: 83.62%)
+### 6.3 Robustness Testing (EfficientNet-B0 Baseline: 85.31%)
 
 | Perturbation | Accuracy | Δ vs Baseline |
 |---|---|---|
-| Sensor Noise | 84.75% | +1.13% |
-| Gaussian Blur | 76.84% | **-6.78%** |
-| Low Light | 78.53% | -5.09% |
-| High Brightness | 82.49% | -1.13% |
-| High Contrast | 81.92% | -1.70% |
-| JPEG Compression | 84.18% | +0.56% |
-| Small Rotation (±10°) | 83.05% | -0.57% |
-| Low Contrast | 81.36% | -2.26% |
-| Reduced Resolution | **61.02%** | **-22.60%** |
-| Original Benchmark | 83.62% | Baseline |
+| Sensor Noise | 83.62% | -1.69 pts |
+| Gaussian Blur | 80.23% | **-5.08 pts** |
+| Low Light | 81.92% | -3.39 pts |
+| High Brightness | 83.62% | -1.69 pts |
+| High Contrast | 83.62% | -1.69 pts |
+| JPEG Compression | 84.18% | -1.13 pts |
+| Small Rotation (±10°) | 83.62% | -1.69 pts |
+| Low Contrast | 81.36% | -3.95 pts |
+| Reduced Resolution | **57.63%** | **-27.68 pts** |
+| Original Benchmark | 85.31% | Baseline |
 
-**Critical finding**: Reduced resolution is the dominant robustness failure mode at -22.60%. Field deployments using drone or distant sensor imagery must maintain sufficient spatial resolution.
+**Critical finding**: Reduced resolution is the dominant robustness failure mode at -27.68 pts. Field deployments using drone or distant sensor imagery must maintain sufficient spatial resolution.
 
 ### 6.4 Augmentation Ablation
 
@@ -362,13 +362,13 @@ Conclusion: Augmentation strategies successful in general object recognition tas
 
 ## 8. Conclusion
 
-This project demonstrates a complete, end-to-end, reproducible AI-powered solar panel inspection system that advances beyond proof-of-concept classification toward deployable operational tooling. The production **EfficientNet-B0** classifier achieves **85.31% test accuracy** and **84.93% macro F1** on an independently partitioned 6-class photovoltaic fault dataset, outperforming MobileNetV2 by 2.26% accuracy. The system uniquely integrates Grad-CAM explainability, approximate visual fault-region analysis, rule-based severity triage, prescriptive maintenance workflow recommendations, persistent panel asset management, a RESTful API, an interactive web dashboard, Docker containerization, and AWS deployment blueprints into a single cohesive platform.
+This project demonstrates a complete, end-to-end, reproducible AI-powered solar panel inspection prototype that advances beyond proof-of-concept classification toward operational decision support. The production **EfficientNet-B0** classifier achieves **85.31% test accuracy** and **84.93% macro F1** on an independently partitioned 6-class photovoltaic fault dataset, outperforming MobileNetV2 by 2.26 percentage points. The system integrates Grad-CAM explainability, approximate visual fault-region analysis, rule-based severity triage, prescriptive maintenance workflow recommendations, persistent panel asset management, a RESTful API, and an interactive web dashboard into a single cohesive research and prototype platform.
 
 A significant experimental finding is that domain-specific image augmentation **reduced** classifier performance by 5.08%–6.03%, demonstrating that synthetic photometric and geometric distortions can disrupt subtle surface texture discriminators critical for photovoltaic fault classification. This result has direct practical implications for training protocol design in surface anomaly inspection research.
 
-Robustness testing across 10 perturbation conditions identified that image resolution degradation is the primary field failure mode (-22.60%), providing specific guidance for minimum sensor resolution requirements in drone or remote inspection deployments.
+Robustness testing across 10 perturbation conditions identified that image resolution degradation is the primary field failure mode (-27.68 pts), providing specific guidance for minimum sensor resolution requirements in drone or remote inspection deployments.
 
-The project achieves all 12 primary objectives (and 1 partial objective — cloud deployment is prepared but not live), validated by 169 passing regression tests, a passing ESLint audit, Docker Compose stack validation, and a GitHub repository with full version history.
+The project achieves all 12 primary objectives and a prepared cloud-deployment path that was not live-operated, validated by 169 passing regression tests, a passing ESLint audit, Docker Compose stack validation, and a GitHub repository with full version history.
 
 ---
 
@@ -391,7 +391,7 @@ Key references:
 - **[14]** Scikit-learn: Machine Learning in Python (JMLR 2011)
 
 > [!NOTE]
-> References marked `[VERIFY]` in `REFERENCES.md` should be confirmed against IEEE Xplore, ACM Digital Library, or Google Scholar before formal submission.
+> References marked `TODO: verify citation metadata` in `REFERENCES.md` should be checked against the original publication details before formal submission.
 
 ---
 

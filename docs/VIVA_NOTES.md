@@ -46,7 +46,7 @@ MobileNetV2 is a lightweight, edge-optimized architecture that uses inverted res
 
 ## Q6. Why did data augmentation reduce performance instead of improving it?
 
-This was the key finding from the augmentation ablation experiment. Adding domain-specific augmentations — including random rotations, brightness/contrast shifts, blur, and noise — during EfficientNet-B0 training lowered test accuracy from 85.31% to 80.23% and macro F1 from 84.93% to 78.90%.
+This was the key finding from the augmentation ablation experiment. Adding domain-specific augmentations — including random rotations, brightness/contrast shifts, blur, and noise — during EfficientNet-B0 training lowered test accuracy from 85.31% to 80.23% and macro F1 from 84.93% to 78.90%. The augmentation experiment reduced performance on this dataset, so the non-augmented EfficientNet-B0 remained the canonical production checkpoint.
 
 The most likely reason is that in photovoltaic fault classification, many discriminative features are subtle and class-specific — for example, the dark brownish discolouration of an electrical burn, the spider-web line pattern of physical glass fracture, or the uniform matte texture of dust. Synthetic color shifts, angle rotations, and blur distortions can confound these subtle visual cues, causing the model to learn less precise decision boundaries. The augmentation strategy that works well for object recognition datasets (where shape is dominant) does not necessarily transfer to surface anomaly inspection tasks.
 
@@ -67,20 +67,20 @@ The output is a heatmap highlighting which image regions drove the classificatio
 
 ## Q8. Is Grad-CAM the same as image segmentation? Can it locate defects precisely?
 
-No. Grad-CAM provides approximate visual saliency — it shows which broad image regions influenced the network's prediction. It is not pixel-level semantic segmentation. The output resolution originates from the network's final convolutional layer (7×7 feature map), which after upsampling produces a coarse spatial map, not sharp object boundaries. The system clearly labels Grad-CAM visualizations as visual attention maps, not certified defect boundaries.
+No. Grad-CAM provides an approximate saliency heatmap showing image regions that influenced the model's prediction. It is not pixel-level semantic segmentation. The output resolution originates from the network's final convolutional layer (7×7 feature map), which after upsampling produces a coarse spatial map, not sharp object boundaries. The system clearly labels Grad-CAM visualizations as visual attention maps, not exact defect boundaries.
 
 ---
 
 ## Q9. How is severity calculated in this system?
 
-Severity is a rule-based heuristic combining three factors:
+Severity is a heuristic operational risk-triage estimate based on three factors:
 1. **Class inherent risk weight** — Electrical damage has the highest risk weight (1.00), physical damage (0.90), snow-covered (0.75), bird-drop (0.70), dusty (0.55), clean (0.00).
 2. **Model confidence** — Higher confidence in a high-risk class increases severity.
-3. **Approximate visual area** — The percentage of module surface covered by high Grad-CAM activation is normalized and incorporated.
+3. **Approximate visual region** — The percentage of module surface covered by strong Grad-CAM activation is normalized and incorporated.
 
 These three factors produce a composite score mapped to five tiers: CRITICAL, HIGH, MEDIUM, LOW, or NEGLIGIBLE.
 
-**Important**: This severity is a visual operational heuristic. It does not measure actual electrical power loss, temperature, or structural integrity.
+**Important**: This severity is a heuristic operational estimate. It does not measure actual electrical power loss, temperature, crack depth, or structural integrity.
 
 ---
 
@@ -169,7 +169,7 @@ Live AWS deployment was **not performed** because active AWS credentials and EC2
 
 ## Q19. What was the biggest robustness failure mode?
 
-**Reduced resolution**. When test images were downsampled to lower pixel density (simulating distant drone captures or thumbnail previews), model accuracy dropped from 83.62% to **61.02%** — a -22.60% degradation. This makes sense because physical crack lines, fine electrical burn edges, and the texture differences between clean glass and faint dust are all encoded in high-frequency detail that disappears under heavy downsampling. The practical implication is that inspection cameras must maintain sufficient resolution for reliable classification.
+**Reduced resolution**. When test images were downsampled to lower pixel density (simulating distant drone captures or thumbnail previews), model accuracy dropped from **85.31%** to **57.63%** — a **-27.68 percentage point** degradation. This makes sense because physical crack lines, fine electrical burn edges, and the texture differences between clean glass and faint dust are all encoded in high-frequency detail that disappears under heavy downsampling. The practical implication is that inspection cameras must maintain sufficient resolution for reliable classification.
 
 ---
 

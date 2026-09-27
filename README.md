@@ -1,6 +1,6 @@
 # AI-Based Solar Panel Fault Detection and Inspection System
 
-An end-to-end, production-grade deep learning and computer vision inspection system for automated photovoltaic (PV) defect classification, visual attention explainability (Grad-CAM), severity triage, maintenance workflow guidance, and panel metadata management.
+An end-to-end deep learning and computer vision inspection system for automated photovoltaic (PV) defect classification, visual attention explainability (Grad-CAM), severity triage, maintenance workflow guidance, and panel metadata management.
 
 ---
 
@@ -8,7 +8,7 @@ An end-to-end, production-grade deep learning and computer vision inspection sys
 
 The **Solar Panel Fault Detection and Inspection System** automates the identification and operational triage of defects, contamination, and environmental degradation on photovoltaic modules. Built upon empirical transfer learning architectures (EfficientNet-B0 and MobileNetV2), the system pairs high-performance neural classification with visual explainability, spatial fault localization heuristics, rule-based operational triage, and a modern microservices web interface (FastAPI backend + Next.js 16 frontend + relational database persistence).
 
-The system is containerized with Docker and Docker Compose, features a comprehensive 169-test automated regression suite, and includes local validation configurations for cloud/EC2 deployment.
+The system is containerized with Docker and Docker Compose, features a comprehensive 169-test automated regression suite, and includes AWS EC2 deployment artifacts that were prepared and locally validated. No live AWS deployment was performed.
 
 ---
 
@@ -31,7 +31,7 @@ This project provides an automated, reproducible inspection pipeline capable of 
 - **Asset Metadata Tracking**: Panel ID, location/string tags, latitude/longitude, array name, and operational status.
 - **RESTful API Backend**: FastAPI service exposing validation, inference, image uploads, batch inspection, and CRUD history endpoints with OpenAPI/Swagger docs.
 - **Interactive Web Interface**: Next.js 16 frontend with TailwindCSS, dynamic dashboards, file dropzones, real-time inspection visualization, and historical filtering.
-- **Hybrid Storage Layer**: SQLAlchemy database abstraction supporting local SQLite persistence with seamless PostgreSQL compatibility.
+- **Hybrid Storage Layer**: SQLAlchemy database abstraction supporting local SQLite persistence with PostgreSQL compatibility prepared for later deployment. The validated environment used SQLite; PostgreSQL credentials were not available for operational validation.
 - **Dockerized Architecture**: Multi-stage production containerization with independent backend and frontend services.
 - **169 Automated Tests**: Comprehensive regression suite covering preprocessing, models, explainability, severity, API endpoints, database persistence, and container configs.
 
@@ -66,7 +66,7 @@ This project provides an automated, reproducible inspection pipeline capable of 
 
 ## 5. ML Pipeline
 
-The machine learning pipeline guarantees deterministic data processing from raw image ingestion to model output:
+The machine learning pipeline guarantees deterministic data processing from raw image ingestion to model output for the validated local CPU-based engineering prototype:
 
 1. **Robust Loading & Format Normalization**: Ingests JPEG, PNG, WEBP, and BMP images; handles RGBA alpha composite flattening and grayscale replication to ensure 3-channel RGB.
 2. **Standardized Resizing**: Bilinear interpolation scaling to canonical $224 \times 224$ pixels.
@@ -103,7 +103,7 @@ The validation layer checks the following:
 - Blur: Laplacian variance is used as the reproducible quality metric. The threshold is 50.0. This is an engineering heuristic rather than a scientifically optimized optimum, chosen to reject clearly unusable blurry images without aggressively rejecting valid solar-panel photographs.
 - Brightness: mean luminance is used to reject images that are too dark or too bright for reliable inspection. The thresholds are 25.0 for darkness and 245.0 for overexposure. These values are intentionally conservative and not claimed to be universal physical limits.
 
-This layer reduces obviously unsuitable inputs reaching the classifier, while preserving the existing six-class inference pipeline, Grad-CAM flow, severity estimate, and maintenance recommendation behavior unchanged for accepted images.
+This layer reduces obviously unsuitable inputs reaching the classifier while preserving the existing six-class inference pipeline, Grad-CAM flow, severity estimate, and maintenance recommendation behavior unchanged for accepted images. It is an engineering heuristic input-suitability gate checking readability, minimum resolution, blur, and extreme brightness; it is not a trained semantic out-of-distribution detector.
 
 ## 8. Explainability
 
@@ -122,8 +122,8 @@ Interpretability is implemented via **Grad-CAM** (Gradient-weighted Class Activa
 To translate continuous Grad-CAM heatmaps into structured spatial measurements, the system executes an automated computer vision contour analysis pipeline:
 - **Thresholding**: Otsu and percentile-based thresholding identify primary activation hotspots.
 - **Morphological Filtering**: Morphological closing fills internal gaps and removes peripheral sensor noise.
-- **Contour Extraction**: Identifies the primary connected defect region.
-- **Spatial Metrics**: Calculates the bounding box coordinates $(x, y, w, h)$, region centroid, and estimated percentage of module surface area affected.
+- **Contour Extraction**: Identifies the primary connected saliency region.
+- **Spatial Metrics**: Calculates the bounding box coordinates $(x, y, w, h)$, region centroid, and an approximate visual saliency-region percentage used for triage support.
 
 ---
 
@@ -132,10 +132,10 @@ To translate continuous Grad-CAM heatmaps into structured spatial measurements, 
 The inspection engine computes an operational severity grade (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`, `NEGLIGIBLE`) by combining:
 1. **Predicted Fault Category**: Inherent operational risk associated with the defect class (e.g., `Electrical-damage` carries higher risk weight than `Dusty`).
 2. **Prediction Confidence**: Model certainty in the classification.
-3. **Visual Region Extent**: Estimated surface area coverage derived from fault-region analysis.
+3. **Approximate Visual Region**: Estimated saliency-region extent derived from Grad-CAM analysis.
 
 > [!IMPORTANT]
-> **Engineering Scope**: Severity ratings are AI-assisted visual heuristics designed for triage prioritization. They do **not** directly measure electrical power degradation (kW), internal junction temperature ($^\circ\text{C}$), crack micro-depth ($\mu\text{m}$), or physical structural integrity.
+> **Engineering Scope**: Severity is a heuristic operational risk-triage estimate based on predicted fault class, model confidence, and approximate visual region. It does **not** measure electrical power loss, temperature, crack depth, or structural integrity.
 
 ---
 
@@ -148,7 +148,7 @@ Based on the predicted class, severity tier, and visual area, the system outputs
 - **Inspection Checklist**: Flags whether manual on-site technician verification or aerial drone re-scanning is advised.
 
 > [!NOTE]
-> **Advisory Scope**: Maintenance suggestions constitute operational decision-support guidance and do not replace certified engineering diagnoses or site-specific electrical safety protocols.
+> **Advisory Scope**: Maintenance suggestions are AI-assisted workflow guidance for inspection and maintenance prioritization and do not replace certified engineering diagnoses or site-specific electrical safety protocols.
 
 ---
 
@@ -192,11 +192,8 @@ Built with **Next.js 16** (React 19, TypeScript, TailwindCSS):
 ## 14. Database
 
 - **ORM**: SQLAlchemy with declarative models (`Panel`, `Inspection`).
-- **Default Storage**: SQLite (`data/solar_panel_ai.db`) for lightweight, zero-configuration local and containerized development.
-- **Enterprise Storage**: Fully compatible with PostgreSQL via connection string configuration:
-  ```bash
-  DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/solar_panel_ai
-  ```
+- **Validated Storage**: SQLite (`data/solar_panel_ai.db`) was used in the validated environment for lightweight local and containerized development.
+- **PostgreSQL Compatibility**: PostgreSQL compatibility and configuration were prepared, but live PostgreSQL credentials were not available for operational validation.
 - **Seeding & Migrations**: Automated database initialization and demo data seeding scripts provided in `scripts/setup_database.py`.
 
 ---
@@ -214,7 +211,7 @@ Production multi-service container deployment via Docker Compose:
 ## 16. AWS Deployment Status
 
 > [!IMPORTANT]
-> **Current Cloud Status**: EC2 deployment configuration was prepared and locally validated. Live AWS deployment was not performed because AWS credentials/EC2 access were unavailable and the project intentionally avoids cloud costs at this stage.
+> **Current Cloud Status**: The system was validated as a local CPU-based engineering prototype. AWS EC2 deployment artifacts were prepared and locally validated, but no live AWS deployment was performed.
 
 Full deployment artifacts (Ubuntu 24.04 provisioning script, systemd service templates, nginx reverse proxy blueprints, and EC2-specific Docker Compose configs) are maintained and documented in [`AWS.md`](AWS.md).
 
@@ -242,16 +239,16 @@ The production EfficientNet-B0 model was subjected to systematic perturbation st
 
 | Perturbation Condition | Evaluated Accuracy | Macro F1 | Relative Impact | Key Finding |
 | :--- | :---: | :---: | :---: | :--- |
-| **Original Benchmark** | 83.62% | 82.35% | Baseline | Unmodified test set baseline |
-| **Reduced Resolution** | **61.02%** | **58.59%** | **-22.60%** | **Strongest degradation condition**; fine crack lines and micro-burns vanish |
-| **Gaussian Blur** | **76.84%** | **75.32%** | **-6.78%** | Noticeable degradation; softens sharp defect edges |
-| **Low Light** | **78.53%** | **78.58%** | **-5.09%** | Reduced contrast challenges dark bird-drop and shadow distinction |
-| **Low Contrast** | 81.36% | 81.39% | -2.26% | Slight drop; model relies on texture gradients |
-| **High Contrast** | 81.92% | 82.49% | -1.70% | Minimal impact; preserved boundary edges |
-| **High Brightness** | 82.49% | 82.84% | -1.13% | Minor impact; robust against glare |
-| **Small Rotation ($\pm 10^\circ$)** | 83.05% | 83.06% | -0.57% | Negligible change; orientation-tolerant |
-| **JPEG Compression** | 84.18% | 84.52% | +0.56% | Stable; resistant to standard lossy web transmission |
-| **Sensor Noise** | 84.75% | 84.84% | +1.13% | Stable; high-frequency Gaussian noise does not disrupt feature maps |
+| **Original Benchmark** | 85.31% | 84.93% | Baseline | Canonical preprocessing baseline |
+| **Reduced Resolution** | **57.63%** | **56.17%** | **-27.68 pts** | **Strongest degradation condition**; fine crack lines and micro-burns vanish |
+| **Gaussian Blur** | **80.23%** | **77.65%** | **-5.08 pts** | Noticeable degradation; softens sharp defect edges |
+| **Low Light** | **81.92%** | **81.14%** | **-3.39 pts** | Reduced contrast challenges dark bird-drop and shadow distinction |
+| **Low Contrast** | 81.36% | 81.18% | -3.95 pts | Moderate decline; model relies on texture gradients |
+| **High Contrast** | 83.62% | 83.96% | -1.69 pts | Minimal impact; preserved boundary edges |
+| **High Brightness** | 83.62% | 83.94% | -1.69 pts | Minor impact; robust against glare |
+| **Small Rotation ($\pm 10^\circ$)** | 83.62% | 84.44% | -1.69 pts | Negligible change; orientation-tolerant |
+| **JPEG Compression** | 84.18% | 85.14% | -1.13 pts | Stable; resistant to standard lossy web transmission |
+| **Sensor Noise** | 83.62% | 83.92% | -1.69 pts | Stable; high-frequency Gaussian noise does not disrupt feature maps |
 
 ---
 

@@ -94,27 +94,24 @@ To evaluate the operational resilience of the production model under real-world 
 
 | Perturbation Condition | Evaluated Accuracy | Macro F1 | Performance Impact | Operational Finding |
 | :--- | :---: | :---: | :---: | :--- |
-| **Original Benchmark** | 83.62% | 82.35% | Baseline | Unmodified test set baseline |
-| **Reduced Resolution** | **61.02%** | **58.59%** | **-22.60%** | **Strongest degradation condition**. Downsampling below $112 \times 112$ destroys fine crack lines and micro-burns. |
-| **Gaussian Blur** | **76.84%** | **75.32%** | **-6.78%** | Noticeable degradation; softens high-frequency defect edges and cell boundaries. |
-| **Low Light** | **78.53%** | **78.58%** | **-5.09%** | Illumination reduction impairs differentiation between dark bird drops and shadows. |
-| **Low Contrast** | 81.36% | 81.39% | -2.26% | Moderate decline; model partially relies on texture gradients. |
-| **High Contrast** | 81.92% | 82.49% | -1.70% | Minimal impact; preserved boundary edges maintain classification. |
-| **High Brightness** | 82.49% | 82.84% | -1.13% | Minor impact; model demonstrates strong resilience against solar glare. |
-| **Small Rotation ($\pm 10^\circ$)** | 83.05% | 83.06% | -0.57% | Negligible change; orientation-tolerant feature representations. |
-| **JPEG Compression** | 84.18% | 84.52% | +0.56% | Highly stable; resistant to standard lossy web transmission. |
-| **Sensor Noise** | 84.75% | 84.84% | +1.13% | Highly stable; additive Gaussian noise does not disrupt convolutional kernels. |
+| **Original Benchmark** | 85.31% | 84.93% | Baseline | Canonical preprocessing baseline |
+| **Reduced Resolution** | **57.63%** | **56.17%** | **-27.68 pts** | **Strongest degradation condition**. Downsampling below $112 \times 112$ destroys fine crack lines and micro-burns. |
+| **Gaussian Blur** | **80.23%** | **77.65%** | **-5.08 pts** | Noticeable degradation; softens high-frequency defect edges and cell boundaries. |
+| **Low Light** | **81.92%** | **81.14%** | **-3.39 pts** | Illumination reduction impairs differentiation between dark bird drops and shadows. |
+| **Low Contrast** | 81.36% | 81.18% | -3.95 pts | Moderate decline; model partially relies on texture gradients. |
+| **High Contrast** | 83.62% | 83.96% | -1.69 pts | Minimal impact; preserved boundary edges maintain classification. |
+| **High Brightness** | 83.62% | 83.94% | -1.69 pts | Minor impact; model demonstrates strong resilience against solar glare. |
+| **Small Rotation ($\pm 10^\circ$)** | 83.62% | 84.44% | -1.69 pts | Negligible change; orientation-tolerant feature representations. |
+| **JPEG Compression** | 84.18% | 85.14% | -1.13 pts | Highly stable; resistant to standard lossy web transmission. |
+| **Sensor Noise** | 83.62% | 83.92% | -1.69 pts | Highly stable; additive Gaussian noise does not disrupt convolutional kernels. |
 
 ---
 
 ## 5. Evaluation Consistency & Preprocessing Reproducibility
 
-During system benchmarking, an evaluation discrepancy was identified: an early evaluator reported 83.62% test accuracy, while the canonical evaluation script reported 85.31% on the exact same checkpoint (`efficientnet_b0_baseline_best.pth`) and 177 test images.
+During system benchmarking, an evaluation discrepancy was identified in an earlier legacy evaluator. The canonical re-run now establishes the authoritative benchmark: 85.31% test accuracy and 84.93% macro F1 on the same checkpoint and 177-image test set.
 
 ### Investigation & Root Cause
-A forensic comparison (`results/metrics/evaluation_consistency_report.json`) analyzed all 177 image predictions and identified 14 differing classifications:
-- **Root Cause**: Resizing interpolation algorithm mismatch.
-  - The canonical Phase 4 pipeline utilized OpenCV bilinear interpolation (`cv2.INTER_LINEAR` via Albumentations).
-  - The secondary evaluator utilized PIL bicubic interpolation (`Image.Resampling.BICUBIC`).
-- **Engineering Resolution**: Because EfficientNet-B0 was trained exclusively on OpenCV bilinear representations, using PIL bicubic introduced subtle sub-pixel antialiasing artifacts that shifted boundary probabilities on 14 borderline images.
-- **Outcome**: Standardized `src/preprocessing/pipeline.py` across all evaluation scripts, API inference services, and tests, establishing 85.31% as the canonical, reproducible test benchmark.
+A forensic comparison identified a preprocessing mismatch in the earlier evaluation path:
+- **Root Cause**: The legacy path relied on a different resizing/interpolation workflow than the canonical production pipeline.
+- **Engineering Resolution**: The canonical preprocessing path was used consistently for the final benchmark, establishing 85.31% as the authoritative, reproducible test benchmark.
