@@ -17,8 +17,8 @@ from pathlib import Path
 import unittest
 
 from fastapi.testclient import TestClient
-from PIL import Image
-from sqlalchemy import create_engine, event
+from PIL import Image, ImageFilter
+from sqlalchemy import create_engine, event, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -201,6 +201,148 @@ class TestFastAPIBackend(unittest.TestCase):
         self.assertIsNotNone(db_panel)
         self.assertEqual(db_panel.location, "Block A - Rooftop 1")
         db.close()
+
+    def test_05b_valid_existing_solar_panel_image_passes_quality_validation(self):
+        """Valid real solar-panel image passes the quality gate and proceeds to inference."""
+        path = self.root / "data" / "test" / "Bird-drop" / "13.JPG"
+        self.assertTrue(path.exists(), f"Bird-drop test image not found at {path}")
+        with open(path, "rb") as f:
+            img_bytes = f.read()
+
+        res = self.client.post(
+            "/api/inspect",
+            data={"panel_id": "SP-QUALITY-OK", "location": "Validation Test Site"},
+            files={"file": (path.name, img_bytes, "image/jpeg")},
+        )
+        self.assertEqual(res.status_code, 201, res.text)
+        data = res.json()
+        self.assertIn("predicted_class", data)
+        self.assertEqual(data["panel_id"], "SP-QUALITY-OK")
+
+    def test_05c_corrupted_image_is_rejected_safely(self):
+        """Corrupted or unreadable uploads are rejected without exposing internal exceptions."""
+        res = self.client.post(
+            "/api/inspect",
+            data={"panel_id": "SP-BAD-IMG", "location": "Validation Site"},
+            files={"file": ("corrupt.jpg", b"not-a-real-image", "image/jpeg")},
+        )
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("Image could not be read", res.json()["detail"])
+
+    def test_05d_extremely_small_image_is_rejected(self):
+        """Tiny images are rejected before model inference when they are not interpretable."""
+        img = Image.new("RGB", (24, 24), color=(200, 200, 200))
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        buf.seek(0)
+
+        res = self.client.post(
+            "/api/inspect",
+            data={"panel_id": "SP-SMALL", "location": "Validation Site"},
+            files={"file": ("tiny.png", buf.getvalue(), "image/png")},
+        )
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("resolution is too low", res.json()["detail"].lower())
+
+    def test_05e_blurry_image_is_rejected(self):
+        """Clearly blurry images are blocked by the quality gate."""
+        img = Image.new("RGB", (224, 224), color=(245, 245, 245))
+        blurred = img.filter(ImageFilter.GaussianBlur(radius=9))
+        buf = io.BytesIO()
+        blurred.save(buf, format="PNG")
+        buf.seek(0)
+
+        res = self.client.post(
+            "/api/inspect",
+            data={"panel_id": "SP-BLUR", "location": "Validation Site"},
+            files={"file": ("blur.png", buf.getvalue(), "image/png")},
+        )
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("blurry", res.json()["detail"].lower())
+
+    def test_05f_dark_image_is_rejected(self):
+        """Extremely dark images are rejected as unsuitable for inspection."""
+        img = Image.new("RGB", (224, 224), color=(5, 5, 5))
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG")
+        buf.seek(0)
+
+        res = self.client.post(
+            "/api/inspect",
+            data={"panel_id": "SP-DARK", "location": "Validation Site"},
+            files={"file": ("dark.jpg", buf.getvalue(), "image/jpeg")},
+        )
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("too dark", res.json()["detail"].lower())
+
+    def test_05g_bright_image_is_rejected(self):
+        """Extremely overexposed images are rejected as unsuitable for inspection."""
+        img = Image.new("RGB", (224, 224), color=(250, 250, 250))
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG")
+        buf.seek(0)
+
+        res = self.client.post(
+            "/api/inspect",
+            data={"panel_id": "SP-BRIGHT", "location": "Validation Site"},
+            files={"file": ("bright.jpg", buf.getvalue(), "image/jpeg")},
+        )
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("too bright", res.json()["detail"].lower())
+
+    def test_05h_valid_electrical_damage_image_still_infers(self):
+        """A known valid Electrical-damage image still completes the inference pipeline."""
+        path = self.root / "data" / "test" / "Electrical-damage" / "Electrical (1).jpg"
+        self.assertTrue(path.exists(), f"Electrical-damage test image not found at {path}")
+        with open(path, "rb") as f:
+            img_bytes = f.read()
+
+        res = self.client.post(
+            "/api/inspect",
+            data={"panel_id": "SP-ELECTRICAL", "location": "Electrical Validation"},
+            files={"file": (path.name, img_bytes, "image/jpeg")},
+        )
+        self.assertEqual(res.status_code, 201, res.text)
+        self.assertIn(res.json()["predicted_class"], ["Electrical-damage", "Dusty", "Clean", "Bird-drop", "Physical-damage", "Snow-Covered"])
+
+    def test_05i_valid_bird_drop_image_still_infers(self):
+        """A known valid Bird-drop image still completes the inference pipeline."""
+        path = self.root / "data" / "test" / "Bird-drop" / "13.JPG"
+        self.assertTrue(path.exists(), f"Bird-drop image not found at {path}")
+        with open(path, "rb") as f:
+            img_bytes = f.read()
+
+        res = self.client.post(
+            "/api/inspect",
+            data={"panel_id": "SP-BIRD", "location": "Bird Validation"},
+            files={"file": (path.name, img_bytes, "image/jpeg")},
+        )
+        self.assertEqual(res.status_code, 201, res.text)
+        self.assertIn(res.json()["predicted_class"], ["Electrical-damage", "Dusty", "Clean", "Bird-drop", "Physical-damage", "Snow-Covered"])
+
+    def test_05j_rejected_image_does_not_create_inspection_record(self):
+        """Rejected images must never create database inspection records."""
+        initial_total = self.SessionFactory().execute(
+            text("SELECT COUNT(*) FROM inspections")
+        ).scalar_one()
+        self.assertEqual(initial_total, 0)
+
+        img = Image.new("RGB", (24, 24), color=(200, 200, 200))
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        buf.seek(0)
+
+        res = self.client.post(
+            "/api/inspect",
+            data={"panel_id": "SP-REJECTED", "location": "No Record"},
+            files={"file": ("tiny.png", buf.getvalue(), "image/png")},
+        )
+        self.assertEqual(res.status_code, 400)
+
+        total_after = self.SessionFactory().execute(
+            text("SELECT COUNT(*) FROM inspections")
+        ).scalar_one()
+        self.assertEqual(total_after, 0)
 
     def test_06_panel_endpoints(self):
         """6. Panel listing, panel lookup, and 404 on missing panel."""

@@ -24,6 +24,7 @@ from sklearn.metrics import (
 )
 
 from src.models.efficientnet import build_efficientnet_b0
+from src.preprocessing.pipeline import load_image_rgb
 from src.robustness.transforms import (
     ROBUSTNESS_CONDITIONS,
     apply_condition_to_image,
@@ -136,9 +137,8 @@ class RobustnessEvaluator:
             batch_samples = self.test_samples[i : i + batch_size]
             tensors = []
             for sample in batch_samples:
-                # Load image deterministically
-                with Image.open(sample["path"]) as pil_img:
-                    rgb_img = np.array(pil_img.convert("RGB").resize((224, 224)))
+                # Load image using the same deterministic RGB path as the canonical pipeline.
+                rgb_img = load_image_rgb(sample["path"])
                 tensor = apply_condition_to_tensor(rgb_img, condition)
                 tensors.append(tensor)
 

@@ -150,14 +150,31 @@ async def inspect_panel(
     stripped_id = (panel_id or "").strip()
     stripped_loc = (location or "").strip() or "Location not specified"
 
-    # Auto-generate a unique panel ID when user omits it
+    # 2. Read and validate the uploaded image before any DB or inference work
+    try:
+        image_bytes = await file.read()
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Image could not be read.",
+        )
+
+    service = InspectionService.get_instance()
+    try:
+        service.validate_image_quality(image_bytes)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+    # 3. Auto-generate a unique panel ID when the user omits it after the image passes validation.
     if not stripped_id:
         panel_repo_check = PanelRepository(db)
         auto_count = db.scalar(
             select(func.count()).where(Panel.panel_id.like("AUTO-%"))
         ) or 0
         candidate_num = auto_count + 1
-        # Ensure the candidate does not already exist
         while True:
             candidate_id = f"AUTO-{candidate_num:03d}"
             existing = panel_repo_check.get_panel(candidate_id)
@@ -167,25 +184,7 @@ async def inspect_panel(
         stripped_id = candidate_id
         logger.info(f"No panel_id provided — auto-generated: {stripped_id}")
 
-    # 2. Image reading and validation
-    try:
-        image_bytes = await file.read()
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to read uploaded file: {e}",
-        )
-
-    service = InspectionService.get_instance()
-    try:
-        service.validate_and_decode_image(image_bytes)
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
-        )
-
-    # 3. Execute ML diagnostic pipeline
+    # 4. Execute ML diagnostic pipeline
     try:
         filename = file.filename or "uploaded_panel.jpg"
         diag = service.run_inspection(image_bytes=image_bytes, filename=filename)

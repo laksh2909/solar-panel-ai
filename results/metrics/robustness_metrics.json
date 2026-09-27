@@ -17,140 +17,140 @@
   "metrics_per_condition": {
     "ORIGINAL": {
       "condition": "ORIGINAL",
-      "accuracy": 0.8362,
-      "macro_precision": 0.8563,
-      "macro_recall": 0.8085,
-      "macro_f1": 0.8235,
-      "weighted_f1": 0.8331,
-      "average_confidence": 0.7729,
-      "average_confidence_correct": 0.8135,
-      "average_confidence_incorrect": 0.5657,
+      "accuracy": 0.8531,
+      "macro_precision": 0.8734,
+      "macro_recall": 0.8357,
+      "macro_f1": 0.8493,
+      "weighted_f1": 0.8525,
+      "average_confidence": 0.7996,
+      "average_confidence_correct": 0.8404,
+      "average_confidence_incorrect": 0.5623,
       "per_class": {
         "Bird-drop": {
-          "precision": 0.814,
+          "precision": 0.7778,
           "recall": 0.8537,
-          "f1_score": 0.8333,
+          "f1_score": 0.814,
           "support": 41,
-          "predicted_count": 43
+          "predicted_count": 45
         },
         "Clean": {
-          "precision": 0.7708,
-          "recall": 0.9487,
-          "f1_score": 0.8506,
+          "precision": 0.8537,
+          "recall": 0.8974,
+          "f1_score": 0.875,
           "support": 39,
-          "predicted_count": 48
+          "predicted_count": 41
         },
         "Dusty": {
-          "precision": 0.8182,
-          "recall": 0.7297,
-          "f1_score": 0.7714,
+          "precision": 0.8108,
+          "recall": 0.8108,
+          "f1_score": 0.8108,
           "support": 37,
-          "predicted_count": 33
+          "predicted_count": 37
         },
         "Electrical-damage": {
-          "precision": 0.9,
-          "recall": 0.8571,
-          "f1_score": 0.878,
+          "precision": 0.9091,
+          "recall": 0.9524,
+          "f1_score": 0.9302,
           "support": 21,
-          "predicted_count": 20
+          "predicted_count": 22
         },
         "Physical-damage": {
-          "precision": 0.875,
-          "recall": 0.5385,
-          "f1_score": 0.6667,
+          "precision": 0.8889,
+          "recall": 0.6154,
+          "f1_score": 0.7273,
           "support": 13,
-          "predicted_count": 8
+          "predicted_count": 9
         },
         "Snow-Covered": {
-          "precision": 0.96,
-          "recall": 0.9231,
-          "f1_score": 0.9412,
+          "precision": 1.0,
+          "recall": 0.8846,
+          "f1_score": 0.9388,
           "support": 26,
-          "predicted_count": 25
+          "predicted_count": 23
         }
       },
       "confusion_matrix": [
         [
           35,
-          1,
+          0,
           4,
           1,
+          1,
+          0
+        ],
+        [
+          1,
+          35,
+          2,
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          30,
+          0,
           0,
           0
         ],
         [
           0,
-          37,
           1,
-          1,
+          0,
+          20,
           0,
           0
         ],
         [
           3,
-          7,
-          27,
+          1,
+          1,
           0,
-          0,
+          8,
           0
         ],
         [
-          0,
-          1,
-          1,
-          18,
-          1,
-          0
-        ],
-        [
-          3,
           2,
-          0,
-          0,
-          7,
-          1
-        ],
-        [
-          2,
+          1,
           0,
           0,
           0,
-          0,
-          24
+          23
         ]
       ]
     },
     "LOW_LIGHT": {
       "condition": "LOW_LIGHT",
-      "accuracy": 0.7853,
-      "macro_precision": 0.7886,
-      "macro_recall": 0.7866,
-      "macro_f1": 0.7858,
-      "weighted_f1": 0.7842,
-      "average_confidence": 0.6927,
-      "average_confidence_correct": 0.733,
-      "average_confidence_incorrect": 0.5456,
+      "accuracy": 0.8192,
+      "macro_precision": 0.8175,
+      "macro_recall": 0.8072,
+      "macro_f1": 0.8114,
+      "weighted_f1": 0.8191,
+      "average_confidence": 0.7295,
+      "average_confidence_correct": 0.7765,
+      "average_confidence_incorrect": 0.5164,
       "per_class": {
         "Bird-drop": {
-          "precision": 0.8378,
+          "precision": 0.8158,
           "recall": 0.7561,
-          "f1_score": 0.7949,
+          "f1_score": 0.7848,
           "support": 41,
-          "predicted_count": 37
+          "predicted_count": 38
         },
         "Clean": {
-          "precision": 0.7234,
+          "precision": 0.8095,
           "recall": 0.8718,
-          "f1_score": 0.7907,
+          "f1_score": 0.8395,
           "support": 39,
-          "predicted_count": 47
+          "predicted_count": 42
         },
         "Dusty": {
-          "precision": 0.7273,
-          "recall": 0.6486,
-          "f1_score": 0.6857,
+          "precision": 0.75,
+          "recall": 0.8108,
+          "f1_score": 0.7792,
           "support": 37,
-          "predicted_count": 33
+          "predicted_count": 40
         },
         "Electrical-damage": {
           "precision": 0.9048,
@@ -160,44 +160,44 @@
           "predicted_count": 21
         },
         "Physical-damage": {
-          "precision": 0.6923,
-          "recall": 0.6923,
-          "f1_score": 0.6923,
+          "precision": 0.6667,
+          "recall": 0.6154,
+          "f1_score": 0.64,
           "support": 13,
-          "predicted_count": 13
+          "predicted_count": 12
         },
         "Snow-Covered": {
-          "precision": 0.8462,
-          "recall": 0.8462,
-          "f1_score": 0.8462,
+          "precision": 0.9583,
+          "recall": 0.8846,
+          "f1_score": 0.92,
           "support": 26,
-          "predicted_count": 26
+          "predicted_count": 24
         }
       },
       "confusion_matrix": [
         [
           31,
-          2,
+          1,
           5,
           1,
-          2,
+          3,
           0
         ],
         [
-          0,
+          1,
           34,
+          2,
           1,
-          1,
-          1,
-          2
+          0,
+          1
         ],
         [
           2,
-          9,
-          24,
+          5,
+          30,
           0,
           0,
-          2
+          0
         ],
         [
           0,
@@ -208,61 +208,61 @@
           0
         ],
         [
-          2,
+          3,
           1,
           1,
           0,
-          9,
+          8,
           0
         ],
         [
-          2,
+          1,
           0,
           2,
           0,
           0,
-          22
+          23
         ]
       ]
     },
     "HIGH_BRIGHTNESS": {
       "condition": "HIGH_BRIGHTNESS",
-      "accuracy": 0.8249,
-      "macro_precision": 0.8461,
-      "macro_recall": 0.8186,
-      "macro_f1": 0.8284,
-      "weighted_f1": 0.8232,
-      "average_confidence": 0.7424,
-      "average_confidence_correct": 0.7833,
-      "average_confidence_incorrect": 0.55,
+      "accuracy": 0.8362,
+      "macro_precision": 0.863,
+      "macro_recall": 0.8235,
+      "macro_f1": 0.8394,
+      "weighted_f1": 0.8367,
+      "average_confidence": 0.7777,
+      "average_confidence_correct": 0.8203,
+      "average_confidence_incorrect": 0.5605,
       "per_class": {
         "Bird-drop": {
-          "precision": 0.8,
-          "recall": 0.7805,
-          "f1_score": 0.7901,
+          "precision": 0.7727,
+          "recall": 0.8293,
+          "f1_score": 0.8,
           "support": 41,
-          "predicted_count": 40
+          "predicted_count": 44
         },
         "Clean": {
-          "precision": 0.8043,
-          "recall": 0.9487,
-          "f1_score": 0.8706,
+          "precision": 0.8571,
+          "recall": 0.9231,
+          "f1_score": 0.8889,
           "support": 39,
-          "predicted_count": 46
+          "predicted_count": 42
         },
         "Dusty": {
-          "precision": 0.75,
-          "recall": 0.7297,
-          "f1_score": 0.7397,
+          "precision": 0.7436,
+          "recall": 0.7838,
+          "f1_score": 0.7632,
           "support": 37,
-          "predicted_count": 36
+          "predicted_count": 39
         },
         "Electrical-damage": {
-          "precision": 0.9091,
-          "recall": 0.9524,
-          "f1_score": 0.9302,
+          "precision": 0.95,
+          "recall": 0.9048,
+          "f1_score": 0.9268,
           "support": 21,
-          "predicted_count": 22
+          "predicted_count": 20
         },
         "Physical-damage": {
           "precision": 0.9,
@@ -272,43 +272,43 @@
           "predicted_count": 10
         },
         "Snow-Covered": {
-          "precision": 0.913,
+          "precision": 0.9545,
           "recall": 0.8077,
-          "f1_score": 0.8571,
+          "f1_score": 0.875,
           "support": 26,
-          "predicted_count": 23
+          "predicted_count": 22
         }
       },
       "confusion_matrix": [
         [
-          32,
-          1,
+          34,
+          0,
           6,
-          1,
-          0,
-          1
-        ],
-        [
-          0,
-          37,
-          1,
           1,
           0,
           0
         ],
         [
+          1,
+          36,
+          2,
+          0,
+          0,
+          0
+        ],
+        [
+          4,
           3,
-          6,
-          27,
+          29,
           0,
           0,
           1
         ],
         [
           0,
+          1,
           0,
-          0,
-          20,
+          19,
           1,
           0
         ],
@@ -333,13 +333,13 @@
     "LOW_CONTRAST": {
       "condition": "LOW_CONTRAST",
       "accuracy": 0.8136,
-      "macro_precision": 0.8494,
-      "macro_recall": 0.7967,
-      "macro_f1": 0.8139,
-      "weighted_f1": 0.8135,
-      "average_confidence": 0.7601,
-      "average_confidence_correct": 0.8043,
-      "average_confidence_incorrect": 0.5671,
+      "macro_precision": 0.832,
+      "macro_recall": 0.8026,
+      "macro_f1": 0.8118,
+      "weighted_f1": 0.816,
+      "average_confidence": 0.7857,
+      "average_confidence_correct": 0.8382,
+      "average_confidence_incorrect": 0.5564,
       "per_class": {
         "Bird-drop": {
           "precision": 0.8649,
@@ -349,71 +349,71 @@
           "predicted_count": 37
         },
         "Clean": {
-          "precision": 0.7778,
-          "recall": 0.8974,
-          "f1_score": 0.8333,
+          "precision": 0.8378,
+          "recall": 0.7949,
+          "f1_score": 0.8158,
           "support": 39,
-          "predicted_count": 45
+          "predicted_count": 37
         },
         "Dusty": {
-          "precision": 0.7073,
-          "recall": 0.7838,
-          "f1_score": 0.7436,
+          "precision": 0.6531,
+          "recall": 0.8649,
+          "f1_score": 0.7442,
           "support": 37,
-          "predicted_count": 41
+          "predicted_count": 49
         },
         "Electrical-damage": {
-          "precision": 0.9,
-          "recall": 0.8571,
-          "f1_score": 0.878,
+          "precision": 0.9091,
+          "recall": 0.9524,
+          "f1_score": 0.9302,
           "support": 21,
-          "predicted_count": 20
+          "predicted_count": 22
         },
         "Physical-damage": {
-          "precision": 1.0,
+          "precision": 0.7273,
           "recall": 0.6154,
-          "f1_score": 0.7619,
+          "f1_score": 0.6667,
           "support": 13,
-          "predicted_count": 8
+          "predicted_count": 11
         },
         "Snow-Covered": {
-          "precision": 0.8462,
-          "recall": 0.8462,
-          "f1_score": 0.8462,
+          "precision": 1.0,
+          "recall": 0.8077,
+          "f1_score": 0.8936,
           "support": 26,
-          "predicted_count": 26
+          "predicted_count": 21
         }
       },
       "confusion_matrix": [
         [
           32,
-          1,
-          5,
-          1,
-          0,
-          2
-        ],
-        [
-          0,
-          35,
-          2,
-          1,
-          0,
-          1
-        ],
-        [
           0,
           7,
-          29,
+          1,
+          1,
+          0
+        ],
+        [
+          1,
+          31,
+          6,
+          1,
           0,
+          0
+        ],
+        [
           0,
-          1
+          3,
+          32,
+          0,
+          2,
+          0
         ],
         [
           0,
           1,
-          2,
-          18,
+          0,
+          20,
           0,
           0
         ],
@@ -426,53 +426,53 @@
           0
         ],
         [
-          2,
+          1,
+          1,
+          3,
           0,
-          2,
           0,
-          0,
-          22
+          21
         ]
       ]
     },
     "HIGH_CONTRAST": {
       "condition": "HIGH_CONTRAST",
-      "accuracy": 0.8192,
-      "macro_precision": 0.8545,
-      "macro_recall": 0.8133,
-      "macro_f1": 0.8249,
-      "weighted_f1": 0.816,
-      "average_confidence": 0.7516,
-      "average_confidence_correct": 0.7932,
-      "average_confidence_incorrect": 0.5628,
+      "accuracy": 0.8362,
+      "macro_precision": 0.8657,
+      "macro_recall": 0.823,
+      "macro_f1": 0.8396,
+      "weighted_f1": 0.8365,
+      "average_confidence": 0.7734,
+      "average_confidence_correct": 0.8167,
+      "average_confidence_incorrect": 0.5521,
       "per_class": {
         "Bird-drop": {
-          "precision": 0.7907,
-          "recall": 0.8293,
-          "f1_score": 0.8095,
+          "precision": 0.7292,
+          "recall": 0.8537,
+          "f1_score": 0.7865,
           "support": 41,
-          "predicted_count": 43
+          "predicted_count": 48
         },
         "Clean": {
-          "precision": 0.717,
-          "recall": 0.9744,
-          "f1_score": 0.8261,
+          "precision": 0.8372,
+          "recall": 0.9231,
+          "f1_score": 0.878,
           "support": 39,
-          "predicted_count": 53
+          "predicted_count": 43
         },
         "Dusty": {
-          "precision": 0.8148,
-          "recall": 0.5946,
-          "f1_score": 0.6875,
+          "precision": 0.8235,
+          "recall": 0.7568,
+          "f1_score": 0.7887,
           "support": 37,
-          "predicted_count": 27
+          "predicted_count": 34
         },
         "Electrical-damage": {
-          "precision": 0.9048,
+          "precision": 0.95,
           "recall": 0.9048,
-          "f1_score": 0.9048,
+          "f1_score": 0.9268,
           "support": 21,
-          "predicted_count": 21
+          "predicted_count": 20
         },
         "Physical-damage": {
           "precision": 0.9,
@@ -482,37 +482,37 @@
           "predicted_count": 10
         },
         "Snow-Covered": {
-          "precision": 1.0,
-          "recall": 0.8846,
-          "f1_score": 0.9388,
+          "precision": 0.9545,
+          "recall": 0.8077,
+          "f1_score": 0.875,
           "support": 26,
-          "predicted_count": 23
+          "predicted_count": 22
         }
       },
       "confusion_matrix": [
         [
-          34,
+          35,
           1,
-          5,
-          1,
-          0,
-          0
-        ],
-        [
-          0,
-          38,
-          0,
-          1,
-          0,
-          0
-        ],
-        [
           4,
-          11,
-          22,
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          36,
+          2,
           0,
           0,
           0
+        ],
+        [
+          5,
+          3,
+          28,
+          0,
+          0,
+          1
         ],
         [
           0,
@@ -531,46 +531,46 @@
           0
         ],
         [
-          2,
+          4,
           1,
           0,
           0,
           0,
-          23
+          21
         ]
       ]
     },
     "GAUSSIAN_BLUR": {
       "condition": "GAUSSIAN_BLUR",
-      "accuracy": 0.7684,
-      "macro_precision": 0.7598,
-      "macro_recall": 0.7656,
-      "macro_f1": 0.7532,
-      "weighted_f1": 0.766,
-      "average_confidence": 0.5302,
-      "average_confidence_correct": 0.57,
-      "average_confidence_incorrect": 0.3982,
+      "accuracy": 0.8023,
+      "macro_precision": 0.7924,
+      "macro_recall": 0.7832,
+      "macro_f1": 0.7765,
+      "weighted_f1": 0.7984,
+      "average_confidence": 0.5487,
+      "average_confidence_correct": 0.5868,
+      "average_confidence_incorrect": 0.3941,
       "per_class": {
         "Bird-drop": {
-          "precision": 0.8438,
-          "recall": 0.6585,
-          "f1_score": 0.7397,
+          "precision": 0.8529,
+          "recall": 0.7073,
+          "f1_score": 0.7733,
           "support": 41,
-          "predicted_count": 32
+          "predicted_count": 34
         },
         "Clean": {
-          "precision": 0.8649,
-          "recall": 0.8205,
-          "f1_score": 0.8421,
+          "precision": 0.9167,
+          "recall": 0.8462,
+          "f1_score": 0.88,
           "support": 39,
-          "predicted_count": 37
+          "predicted_count": 36
         },
         "Dusty": {
-          "precision": 0.7714,
-          "recall": 0.7297,
-          "f1_score": 0.75,
+          "precision": 0.775,
+          "recall": 0.8378,
+          "f1_score": 0.8052,
           "support": 37,
-          "predicted_count": 35
+          "predicted_count": 40
         },
         "Electrical-damage": {
           "precision": 0.75,
@@ -580,44 +580,44 @@
           "predicted_count": 28
         },
         "Physical-damage": {
-          "precision": 0.7,
-          "recall": 0.5385,
-          "f1_score": 0.6087,
+          "precision": 0.75,
+          "recall": 0.4615,
+          "f1_score": 0.5714,
           "support": 13,
-          "predicted_count": 10
+          "predicted_count": 8
         },
         "Snow-Covered": {
-          "precision": 0.6286,
+          "precision": 0.7097,
           "recall": 0.8462,
-          "f1_score": 0.7213,
+          "f1_score": 0.7719,
           "support": 26,
-          "predicted_count": 35
+          "predicted_count": 31
         }
       },
       "confusion_matrix": [
         [
-          27,
+          29,
           1,
-          5,
-          3,
+          4,
+          4,
+          0,
+          3
+        ],
+        [
           1,
+          33,
+          1,
+          0,
+          0,
           4
         ],
         [
-          1,
-          32,
-          0,
-          1,
-          0,
-          5
-        ],
-        [
-          0,
-          4,
-          27,
           0,
           2,
-          4
+          31,
+          0,
+          2,
+          2
         ],
         [
           0,
@@ -630,9 +630,9 @@
         [
           3,
           0,
-          1,
           2,
-          7,
+          2,
+          6,
           0
         ],
         [
@@ -647,88 +647,88 @@
     },
     "SENSOR_NOISE": {
       "condition": "SENSOR_NOISE",
-      "accuracy": 0.8475,
-      "macro_precision": 0.8462,
-      "macro_recall": 0.8534,
-      "macro_f1": 0.8484,
-      "weighted_f1": 0.8466,
-      "average_confidence": 0.6709,
-      "average_confidence_correct": 0.7009,
-      "average_confidence_incorrect": 0.5045,
+      "accuracy": 0.8362,
+      "macro_precision": 0.8393,
+      "macro_recall": 0.8466,
+      "macro_f1": 0.8392,
+      "weighted_f1": 0.839,
+      "average_confidence": 0.6636,
+      "average_confidence_correct": 0.7042,
+      "average_confidence_incorrect": 0.4564,
       "per_class": {
         "Bird-drop": {
-          "precision": 0.8684,
+          "precision": 0.9706,
           "recall": 0.8049,
-          "f1_score": 0.8354,
+          "f1_score": 0.88,
           "support": 41,
-          "predicted_count": 38
+          "predicted_count": 34
         },
         "Clean": {
-          "precision": 0.8182,
-          "recall": 0.9231,
-          "f1_score": 0.8675,
+          "precision": 0.8049,
+          "recall": 0.8462,
+          "f1_score": 0.825,
           "support": 39,
-          "predicted_count": 44
+          "predicted_count": 41
         },
         "Dusty": {
-          "precision": 0.8485,
-          "recall": 0.7568,
-          "f1_score": 0.8,
+          "precision": 0.7073,
+          "recall": 0.7838,
+          "f1_score": 0.7436,
           "support": 37,
-          "predicted_count": 33
+          "predicted_count": 41
         },
         "Electrical-damage": {
-          "precision": 0.9048,
-          "recall": 0.9048,
-          "f1_score": 0.9048,
+          "precision": 0.9091,
+          "recall": 0.9524,
+          "f1_score": 0.9302,
           "support": 21,
-          "predicted_count": 21
+          "predicted_count": 22
         },
         "Physical-damage": {
-          "precision": 0.7857,
+          "precision": 0.6875,
           "recall": 0.8462,
-          "f1_score": 0.8148,
+          "f1_score": 0.7586,
           "support": 13,
-          "predicted_count": 14
+          "predicted_count": 16
         },
         "Snow-Covered": {
-          "precision": 0.8519,
-          "recall": 0.8846,
-          "f1_score": 0.8679,
+          "precision": 0.9565,
+          "recall": 0.8462,
+          "f1_score": 0.898,
           "support": 26,
-          "predicted_count": 27
+          "predicted_count": 23
         }
       },
       "confusion_matrix": [
         [
           33,
-          0,
+          3,
           4,
           1,
-          1,
-          2
-        ],
-        [
           0,
-          36,
-          0,
-          1,
-          0,
-          2
-        ],
-        [
-          2,
-          6,
-          28,
-          0,
-          1,
           0
         ],
         [
           0,
+          33,
+          5,
           1,
           0,
-          19,
+          0
+        ],
+        [
+          0,
+          4,
+          29,
+          0,
+          3,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          20,
           1,
           0
         ],
@@ -741,53 +741,53 @@
           0
         ],
         [
-          2,
+          0,
+          0,
+          3,
           0,
           1,
-          0,
-          0,
-          23
+          22
         ]
       ]
     },
     "JPEG_COMPRESSION": {
       "condition": "JPEG_COMPRESSION",
       "accuracy": 0.8418,
-      "macro_precision": 0.8523,
-      "macro_recall": 0.8462,
-      "macro_f1": 0.8452,
-      "weighted_f1": 0.842,
-      "average_confidence": 0.7006,
-      "average_confidence_correct": 0.7436,
-      "average_confidence_incorrect": 0.4723,
+      "macro_precision": 0.8712,
+      "macro_recall": 0.8467,
+      "macro_f1": 0.8514,
+      "weighted_f1": 0.8434,
+      "average_confidence": 0.7247,
+      "average_confidence_correct": 0.7675,
+      "average_confidence_incorrect": 0.4968,
       "per_class": {
         "Bird-drop": {
-          "precision": 0.8684,
-          "recall": 0.8049,
-          "f1_score": 0.8354,
+          "precision": 0.8095,
+          "recall": 0.8293,
+          "f1_score": 0.8193,
           "support": 41,
-          "predicted_count": 38
+          "predicted_count": 42
         },
         "Clean": {
-          "precision": 0.8919,
-          "recall": 0.8462,
-          "f1_score": 0.8684,
+          "precision": 0.9667,
+          "recall": 0.7436,
+          "f1_score": 0.8406,
           "support": 39,
-          "predicted_count": 37
+          "predicted_count": 30
         },
         "Dusty": {
-          "precision": 0.75,
-          "recall": 0.8108,
-          "f1_score": 0.7792,
+          "precision": 0.7021,
+          "recall": 0.8919,
+          "f1_score": 0.7857,
           "support": 37,
-          "predicted_count": 40
+          "predicted_count": 47
         },
         "Electrical-damage": {
-          "precision": 0.7778,
+          "precision": 0.84,
           "recall": 1.0,
-          "f1_score": 0.875,
+          "f1_score": 0.913,
           "support": 21,
-          "predicted_count": 27
+          "predicted_count": 25
         },
         "Physical-damage": {
           "precision": 0.9091,
@@ -797,35 +797,35 @@
           "predicted_count": 11
         },
         "Snow-Covered": {
-          "precision": 0.9167,
+          "precision": 1.0,
           "recall": 0.8462,
-          "f1_score": 0.88,
+          "f1_score": 0.9167,
           "support": 26,
-          "predicted_count": 24
+          "predicted_count": 22
         }
       },
       "confusion_matrix": [
         [
-          33,
+          34,
           0,
+          6,
+          1,
+          0,
+          0
+        ],
+        [
+          2,
+          29,
           6,
           1,
           1,
           0
         ],
         [
-          1,
+          2,
+          0,
           33,
           2,
-          1,
-          0,
-          2
-        ],
-        [
-          1,
-          3,
-          30,
-          3,
           0,
           0
         ],
@@ -838,10 +838,10 @@
           0
         ],
         [
-          1,
+          2,
           1,
           0,
-          1,
+          0,
           10,
           0
         ],
@@ -857,147 +857,147 @@
     },
     "REDUCED_RESOLUTION": {
       "condition": "REDUCED_RESOLUTION",
-      "accuracy": 0.6102,
-      "macro_precision": 0.636,
-      "macro_recall": 0.6258,
-      "macro_f1": 0.5859,
-      "weighted_f1": 0.5939,
-      "average_confidence": 0.426,
-      "average_confidence_correct": 0.4869,
-      "average_confidence_incorrect": 0.3306,
+      "accuracy": 0.5763,
+      "macro_precision": 0.6229,
+      "macro_recall": 0.6108,
+      "macro_f1": 0.5617,
+      "weighted_f1": 0.5666,
+      "average_confidence": 0.4124,
+      "average_confidence_correct": 0.4816,
+      "average_confidence_incorrect": 0.3182,
       "per_class": {
         "Bird-drop": {
-          "precision": 0.7353,
-          "recall": 0.6098,
-          "f1_score": 0.6667,
+          "precision": 0.6774,
+          "recall": 0.5122,
+          "f1_score": 0.5833,
           "support": 41,
-          "predicted_count": 34
+          "predicted_count": 31
         },
         "Clean": {
-          "precision": 0.8182,
-          "recall": 0.2308,
-          "f1_score": 0.36,
+          "precision": 0.7,
+          "recall": 0.1795,
+          "f1_score": 0.2857,
           "support": 39,
-          "predicted_count": 11
+          "predicted_count": 10
         },
         "Dusty": {
-          "precision": 0.5614,
-          "recall": 0.8649,
-          "f1_score": 0.6809,
+          "precision": 0.6327,
+          "recall": 0.8378,
+          "f1_score": 0.7209,
           "support": 37,
-          "predicted_count": 57
+          "predicted_count": 49
         },
         "Electrical-damage": {
-          "precision": 0.6,
-          "recall": 0.8571,
-          "f1_score": 0.7059,
+          "precision": 0.6333,
+          "recall": 0.9048,
+          "f1_score": 0.7451,
           "support": 21,
           "predicted_count": 30
         },
         "Physical-damage": {
-          "precision": 0.2917,
-          "recall": 0.5385,
-          "f1_score": 0.3784,
+          "precision": 0.2051,
+          "recall": 0.6154,
+          "f1_score": 0.3077,
           "support": 13,
-          "predicted_count": 24
+          "predicted_count": 39
         },
         "Snow-Covered": {
-          "precision": 0.8095,
-          "recall": 0.6538,
-          "f1_score": 0.7234,
+          "precision": 0.8889,
+          "recall": 0.6154,
+          "f1_score": 0.7273,
           "support": 26,
-          "predicted_count": 21
+          "predicted_count": 18
         }
       },
       "confusion_matrix": [
         [
-          25,
+          21,
           0,
-          7,
+          6,
           2,
-          5,
-          2
+          12,
+          0
         ],
         [
-          2,
-          9,
-          11,
           7,
-          9,
+          7,
+          7,
+          5,
+          12,
           1
         ],
         [
+          1,
+          1,
+          31,
+          1,
+          3,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          19,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0,
+          2,
+          8,
+          1
+        ],
+        [
+          0,
+          0,
+          5,
+          1,
           4,
-          0,
-          32,
-          1,
-          0,
-          0
-        ],
-        [
-          0,
-          2,
-          1,
-          18,
-          0,
-          0
-        ],
-        [
-          3,
-          0,
-          1,
-          1,
-          7,
-          1
-        ],
-        [
-          0,
-          0,
-          5,
-          1,
-          3,
-          17
+          16
         ]
       ]
     },
     "SMALL_ROTATION": {
       "condition": "SMALL_ROTATION",
-      "accuracy": 0.8305,
-      "macro_precision": 0.8645,
-      "macro_recall": 0.8104,
-      "macro_f1": 0.8306,
-      "weighted_f1": 0.8301,
-      "average_confidence": 0.7318,
-      "average_confidence_correct": 0.7743,
-      "average_confidence_incorrect": 0.5238,
+      "accuracy": 0.8362,
+      "macro_precision": 0.8791,
+      "macro_recall": 0.8233,
+      "macro_f1": 0.8444,
+      "weighted_f1": 0.8376,
+      "average_confidence": 0.7487,
+      "average_confidence_correct": 0.7931,
+      "average_confidence_incorrect": 0.5222,
       "per_class": {
         "Bird-drop": {
-          "precision": 0.7556,
-          "recall": 0.8293,
-          "f1_score": 0.7907,
+          "precision": 0.7347,
+          "recall": 0.878,
+          "f1_score": 0.8,
           "support": 41,
-          "predicted_count": 45
+          "predicted_count": 49
         },
         "Clean": {
-          "precision": 0.8605,
-          "recall": 0.9487,
-          "f1_score": 0.9024,
+          "precision": 0.8462,
+          "recall": 0.8462,
+          "f1_score": 0.8462,
           "support": 39,
-          "predicted_count": 43
+          "predicted_count": 39
         },
         "Dusty": {
-          "precision": 0.7838,
-          "recall": 0.7838,
-          "f1_score": 0.7838,
+          "precision": 0.7895,
+          "recall": 0.8108,
+          "f1_score": 0.8,
           "support": 37,
-          "predicted_count": 37
+          "predicted_count": 38
         },
         "Electrical-damage": {
-          "precision": 0.9412,
-          "recall": 0.7619,
-          "f1_score": 0.8421,
+          "precision": 0.95,
+          "recall": 0.9048,
+          "f1_score": 0.9268,
           "support": 21,
-          "predicted_count": 17
+          "predicted_count": 20
         },
         "Physical-damage": {
           "precision": 1.0,
@@ -1007,43 +1007,43 @@
           "predicted_count": 9
         },
         "Snow-Covered": {
-          "precision": 0.8462,
-          "recall": 0.8462,
-          "f1_score": 0.8462,
+          "precision": 0.9545,
+          "recall": 0.8077,
+          "f1_score": 0.875,
           "support": 26,
-          "predicted_count": 26
+          "predicted_count": 22
         }
       },
       "confusion_matrix": [
         [
-          34,
+          36,
           0,
           4,
           1,
           0,
-          2
+          0
         ],
         [
+          4,
+          33,
+          2,
           0,
-          37,
-          1,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          30,
           0,
           0,
           1
         ],
         [
-          4,
-          3,
-          29,
-          0,
-          0,
-          1
-        ],
-        [
-          3,
           1,
           1,
-          16,
+          0,
+          19,
           0,
           0
         ],
@@ -1057,11 +1057,11 @@
         ],
         [
           2,
-          0,
+          1,
           2,
           0,
           0,
-          22
+          21
         ]
       ]
     }
@@ -1076,86 +1076,86 @@
       "physical_damage_recall_pct_drop": 0.0
     },
     "LOW_LIGHT": {
-      "accuracy_delta": -0.0509,
-      "macro_f1_delta": -0.0377,
-      "physical_damage_recall_delta": 0.1538,
-      "accuracy_pct_drop": -5.09,
-      "macro_f1_pct_drop": -3.77,
-      "physical_damage_recall_pct_drop": 15.38
-    },
-    "HIGH_BRIGHTNESS": {
-      "accuracy_delta": -0.0113,
-      "macro_f1_delta": 0.0049,
-      "physical_damage_recall_delta": 0.1538,
-      "accuracy_pct_drop": -1.13,
-      "macro_f1_pct_drop": 0.49,
-      "physical_damage_recall_pct_drop": 15.38
-    },
-    "LOW_CONTRAST": {
-      "accuracy_delta": -0.0226,
-      "macro_f1_delta": -0.0096,
-      "physical_damage_recall_delta": 0.0769,
-      "accuracy_pct_drop": -2.26,
-      "macro_f1_pct_drop": -0.96,
-      "physical_damage_recall_pct_drop": 7.69
-    },
-    "HIGH_CONTRAST": {
-      "accuracy_delta": -0.017,
-      "macro_f1_delta": 0.0014,
-      "physical_damage_recall_delta": 0.1538,
-      "accuracy_pct_drop": -1.7,
-      "macro_f1_pct_drop": 0.14,
-      "physical_damage_recall_pct_drop": 15.38
-    },
-    "GAUSSIAN_BLUR": {
-      "accuracy_delta": -0.0678,
-      "macro_f1_delta": -0.0703,
+      "accuracy_delta": -0.0339,
+      "macro_f1_delta": -0.0379,
       "physical_damage_recall_delta": 0.0,
-      "accuracy_pct_drop": -6.78,
-      "macro_f1_pct_drop": -7.03,
+      "accuracy_pct_drop": -3.39,
+      "macro_f1_pct_drop": -3.79,
       "physical_damage_recall_pct_drop": 0.0
     },
+    "HIGH_BRIGHTNESS": {
+      "accuracy_delta": -0.0169,
+      "macro_f1_delta": -0.0099,
+      "physical_damage_recall_delta": 0.0769,
+      "accuracy_pct_drop": -1.69,
+      "macro_f1_pct_drop": -0.99,
+      "physical_damage_recall_pct_drop": 7.69
+    },
+    "LOW_CONTRAST": {
+      "accuracy_delta": -0.0395,
+      "macro_f1_delta": -0.0375,
+      "physical_damage_recall_delta": 0.0,
+      "accuracy_pct_drop": -3.95,
+      "macro_f1_pct_drop": -3.75,
+      "physical_damage_recall_pct_drop": 0.0
+    },
+    "HIGH_CONTRAST": {
+      "accuracy_delta": -0.0169,
+      "macro_f1_delta": -0.0097,
+      "physical_damage_recall_delta": 0.0769,
+      "accuracy_pct_drop": -1.69,
+      "macro_f1_pct_drop": -0.97,
+      "physical_damage_recall_pct_drop": 7.69
+    },
+    "GAUSSIAN_BLUR": {
+      "accuracy_delta": -0.0508,
+      "macro_f1_delta": -0.0728,
+      "physical_damage_recall_delta": -0.1539,
+      "accuracy_pct_drop": -5.08,
+      "macro_f1_pct_drop": -7.28,
+      "physical_damage_recall_pct_drop": -15.39
+    },
     "SENSOR_NOISE": {
-      "accuracy_delta": 0.0113,
-      "macro_f1_delta": 0.0249,
-      "physical_damage_recall_delta": 0.3077,
-      "accuracy_pct_drop": 1.13,
-      "macro_f1_pct_drop": 2.49,
-      "physical_damage_recall_pct_drop": 30.77
+      "accuracy_delta": -0.0169,
+      "macro_f1_delta": -0.0101,
+      "physical_damage_recall_delta": 0.2308,
+      "accuracy_pct_drop": -1.69,
+      "macro_f1_pct_drop": -1.01,
+      "physical_damage_recall_pct_drop": 23.08
     },
     "JPEG_COMPRESSION": {
-      "accuracy_delta": 0.0056,
-      "macro_f1_delta": 0.0217,
-      "physical_damage_recall_delta": 0.2307,
-      "accuracy_pct_drop": 0.56,
-      "macro_f1_pct_drop": 2.17,
-      "physical_damage_recall_pct_drop": 23.07
+      "accuracy_delta": -0.0113,
+      "macro_f1_delta": 0.0021,
+      "physical_damage_recall_delta": 0.1538,
+      "accuracy_pct_drop": -1.13,
+      "macro_f1_pct_drop": 0.21,
+      "physical_damage_recall_pct_drop": 15.38
     },
     "REDUCED_RESOLUTION": {
-      "accuracy_delta": -0.226,
-      "macro_f1_delta": -0.2376,
+      "accuracy_delta": -0.2768,
+      "macro_f1_delta": -0.2876,
       "physical_damage_recall_delta": 0.0,
-      "accuracy_pct_drop": -22.6,
-      "macro_f1_pct_drop": -23.76,
+      "accuracy_pct_drop": -27.68,
+      "macro_f1_pct_drop": -28.76,
       "physical_damage_recall_pct_drop": 0.0
     },
     "SMALL_ROTATION": {
-      "accuracy_delta": -0.0057,
-      "macro_f1_delta": 0.0071,
-      "physical_damage_recall_delta": 0.1538,
-      "accuracy_pct_drop": -0.57,
-      "macro_f1_pct_drop": 0.71,
-      "physical_damage_recall_pct_drop": 15.38
+      "accuracy_delta": -0.0169,
+      "macro_f1_delta": -0.0049,
+      "physical_damage_recall_delta": 0.0769,
+      "accuracy_pct_drop": -1.69,
+      "macro_f1_pct_drop": -0.49,
+      "physical_damage_recall_pct_drop": 7.69
     }
   },
   "worst_condition_by_accuracy": {
     "condition": "REDUCED_RESOLUTION",
-    "accuracy": 0.6102,
-    "drop_pct": -22.6
+    "accuracy": 0.5763,
+    "drop_pct": -27.68
   },
   "worst_condition_by_f1": {
     "condition": "REDUCED_RESOLUTION",
-    "macro_f1": 0.5859,
-    "drop_pct": -23.76
+    "macro_f1": 0.5617,
+    "drop_pct": -28.76
   }
 }

@@ -1,4 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
+
+:root {
+  --font-space-grotesk: "Space Grotesk", "Segoe UI", sans-serif;
+  --font-ibm-plex-sans: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-jetbrains-mono: "JetBrains Mono", "SFMono-Regular", monospace;
+}
 
 @theme {
   --color-surface: #faf8ff;

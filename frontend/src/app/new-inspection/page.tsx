@@ -43,6 +43,13 @@ export default function NewInspectionPage() {
       return "Please try again.";
     }
 
+    if (/image could not be read|resolution is too low|appears excessively blurry|too dark|too bright/i.test(normalized)) {
+      const reason = normalized
+        .replace(/\s+/g, " ")
+        .replace(/^\s+|\s+$/g, "");
+      return reason.endsWith(".") ? reason : `${reason}.`;
+    }
+
     if (/network|fetch|timeout|connection|failed to fetch/i.test(normalized)) {
       return "The connection to the AI inspection service was interrupted. Please try again.";
     }
@@ -139,7 +146,10 @@ export default function NewInspectionPage() {
       router.push(`/inspection-result/${result.inspection_id}`);
     } catch (err: unknown) {
       const safeMessage = getSafeErrorMessage(err);
-      setValidationError(`Inspection could not be completed. ${safeMessage}`);
+      const qualityMessage = /image could not be read|resolution is too low|appears excessively blurry|too dark|too bright/i.test(safeMessage)
+        ? `Image quality is not suitable for inspection. ${safeMessage}`
+        : `Inspection could not be completed. ${safeMessage}`;
+      setValidationError(qualityMessage);
       setIsRunning(false);
       showToast("Inspection could not be completed.");
     }

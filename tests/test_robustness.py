@@ -145,6 +145,19 @@ class TestRobustnessPipeline(unittest.TestCase):
         self.assertIn("per_class", metrics)
         self.assertEqual(len(metrics["per_class"]), 3)
 
+    def test_08_original_condition_matches_canonical_test_pipeline(self):
+        """Original robustness evaluation must exactly match canonical test preprocessing."""
+        evaluator = RobustnessEvaluator(
+            checkpoint_path=self.root / "models" / "checkpoints" / "efficientnet_b0_baseline_best.pth",
+            test_dir=self.root / "data" / "test",
+            device="cpu",
+        )
+
+        metrics, _ = evaluator.evaluate_condition("ORIGINAL")
+
+        self.assertAlmostEqual(metrics["accuracy"], 0.8531, places=4)
+        self.assertAlmostEqual(metrics["macro_f1"], 0.8493, places=4)
+
 
 if __name__ == "__main__":
     unittest.main()

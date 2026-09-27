@@ -27,6 +27,7 @@ project_root = Path(__file__).resolve().parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
+from src.preprocessing.pipeline import load_image_rgb
 from src.robustness.evaluator import RobustnessEvaluator
 from src.robustness.transforms import (
     ROBUSTNESS_CONDITIONS,
@@ -170,8 +171,7 @@ def plot_performance_degradation(degradation_summary: dict, output_path: Path):
 
 def plot_sample_grid(sample_image_path: Path, output_path: Path):
     """Generates a 2x5 grid showing the exact same image under all 10 conditions."""
-    with Image.open(sample_image_path) as pil_img:
-        base_img = np.array(pil_img.convert("RGB").resize((224, 224)))
+    base_img = load_image_rgb(sample_image_path)
 
     fig, axes = plt.subplots(2, 5, figsize=(16, 7), dpi=300)
     axes = axes.flatten()

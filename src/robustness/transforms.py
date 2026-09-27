@@ -121,11 +121,15 @@ def get_robustness_transform(condition: str) -> A.Compose:
 
 def get_full_preprocessing_transform(condition: str) -> A.Compose:
     """
-    Combines visual robustness transform with standard ImageNet normalization
-    and PyTorch tensor conversion.
+    Combines the canonical deterministic resize with the requested robustness
+    condition, then applies ImageNet normalization and tensor conversion.
+
+    This keeps the robustness pipeline aligned with the production test pipeline.
     """
     visual_t = get_robustness_transform(condition)
-    pipeline = list(visual_t.transforms) + [
+    pipeline = [
+        A.Resize(224, 224),
+        *list(visual_t.transforms),
         A.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
         ToTensorV2(),
     ]

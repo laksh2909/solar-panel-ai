@@ -92,7 +92,20 @@ The model classifies PV module conditions across six canonical operational state
 
 ---
 
-## 7. Explainability
+## 7. Image Quality and Input Suitability Validation
+
+Before the existing six-class classifier runs, the backend performs a lightweight image-quality gate designed to prevent obviously unsuitable inputs from reaching the model. This is not a trained semantic out-of-distribution detector and it does not claim that an image is definitely a solar panel. It only rejects inputs that are clearly unreadable, too small, excessively blurry, or clearly too dark or too bright for reliable inspection.
+
+The validation layer checks the following:
+
+- Image decoding: uploaded files must be readable JPEG, PNG, WEBP, or BMP payloads. Corrupted or unreadable files return a safe 4xx response such as "Image could not be read."
+- Minimum resolution: the shorter image edge must be at least 96 pixels. This is intentionally conservative and is based on the system's 224x224 preprocessing pipeline: images much smaller than that do not contain enough usable detail for reliable inspection, while normal field photographs remain accepted.
+- Blur: Laplacian variance is used as the reproducible quality metric. The threshold is 50.0. This is an engineering heuristic rather than a scientifically optimized optimum, chosen to reject clearly unusable blurry images without aggressively rejecting valid solar-panel photographs.
+- Brightness: mean luminance is used to reject images that are too dark or too bright for reliable inspection. The thresholds are 25.0 for darkness and 245.0 for overexposure. These values are intentionally conservative and not claimed to be universal physical limits.
+
+This layer reduces obviously unsuitable inputs reaching the classifier, while preserving the existing six-class inference pipeline, Grad-CAM flow, severity estimate, and maintenance recommendation behavior unchanged for accepted images.
+
+## 8. Explainability
 
 Interpretability is implemented via **Grad-CAM** (Gradient-weighted Class Activation Mapping):
 - Targets the terminal convolutional layer (`features.8` in EfficientNet-B0) where high-level semantic feature representations are richest.

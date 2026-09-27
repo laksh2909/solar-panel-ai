@@ -33,6 +33,10 @@ logger = setup_logger("api_inspection_service")
 
 EXPECTED_CHECKPOINT_SHA256 = "07890dc9964f5162b53ed4c80778ef147c01b977e8bce76d0a15b09c4733fa1e"
 ALLOWED_IMAGE_FORMATS = {"JPEG", "PNG", "WEBP", "BMP"}
+MIN_RESOLUTION_SHORT_EDGE = 32
+BLUR_LAPLACIAN_VARIANCE_THRESHOLD = 50.0
+DARKNESS_MEAN_LUMINANCE_THRESHOLD = 25.0
+BRIGHTNESS_MEAN_LUMINANCE_THRESHOLD = 245.0
 
 
 class InspectionService:
@@ -85,37 +89,64 @@ class InspectionService:
 
     def validate_and_decode_image(self, image_bytes: bytes) -> Tuple[np.ndarray, str]:
         """
-        Validates image magic bytes, format, and decodes to RGB uint8 numpy array.
+        Validates the uploaded file can be read and decoded as a supported image.
 
         Raises:
-            ValueError: If file is corrupted or format is unsupported.
+            ValueError: If the file is unreadable, unsupported, or structurally invalid.
         """
         if not image_bytes or len(image_bytes) < 16:
-            raise ValueError("Uploaded file is empty or too small to be a valid image.")
+            raise ValueError("Image could not be read. File is not a valid or readable image.")
 
         try:
             pil_img = Image.open(io.BytesIO(image_bytes))
-            pil_img.verify()  # Verifies file integrity
-            # Re-open for decoding after verify()
+            pil_img.verify()
             pil_img = Image.open(io.BytesIO(image_bytes))
-        except Exception as e:
-            raise ValueError(f"File is not a valid or readable image: {e}")
+        except Exception:
+            raise ValueError("Image could not be read. File is not a valid or readable image.")
 
         fmt = (pil_img.format or "").upper()
-        # Normalise MPO / JPEG
         if fmt == "MPO":
             fmt = "JPEG"
         if fmt not in ALLOWED_IMAGE_FORMATS:
-            raise ValueError(
-                f"Unsupported image format: '{fmt}'. Allowed: {', '.join(sorted(ALLOWED_IMAGE_FORMATS))}"
-            )
+            raise ValueError("Image could not be read. File is not a valid or readable image.")
 
-        # Ensure RGB
         if pil_img.mode != "RGB":
             pil_img = pil_img.convert("RGB")
 
         rgb_array = np.array(pil_img, dtype=np.uint8)
+        if rgb_array.size == 0:
+            raise ValueError("Image could not be read. File is not a valid or readable image.")
         return rgb_array, fmt
+
+    def validate_image_quality(self, image_bytes: bytes) -> np.ndarray:
+        """
+        Lightweight quality gate that blocks clearly unusable inputs before ML inference.
+
+        This is not a solar-panel detector or semantic OOD model. It only rejects images that
+        are unreadable, undersized, excessively blurry, or clearly too dark/bright for reliable
+        visual inspection.
+        """
+        rgb_array, _ = self.validate_and_decode_image(image_bytes)
+
+        height, width = rgb_array.shape[:2]
+        short_edge = min(height, width)
+        if short_edge < MIN_RESOLUTION_SHORT_EDGE:
+            raise ValueError("Image resolution is too low for reliable inspection.")
+
+        gray = cv2.cvtColor(rgb_array, cv2.COLOR_RGB2GRAY)
+        mean_luminance = float(gray.mean())
+        if mean_luminance < DARKNESS_MEAN_LUMINANCE_THRESHOLD:
+            raise ValueError("Image is too dark for reliable inspection.")
+        if mean_luminance > BRIGHTNESS_MEAN_LUMINANCE_THRESHOLD:
+            raise ValueError("Image is too bright for reliable inspection.")
+
+        if short_edge >= 96:
+            laplacian = cv2.Laplacian(gray, cv2.CV_64F)
+            blur_variance = float(laplacian.var())
+            if blur_variance < BLUR_LAPLACIAN_VARIANCE_THRESHOLD:
+                raise ValueError("Image appears excessively blurry.")
+
+        return rgb_array
 
     def run_inspection(
         self,
