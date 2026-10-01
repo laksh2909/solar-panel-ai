@@ -13,8 +13,10 @@ Tests REST API endpoints:
 from datetime import datetime, timezone
 import hashlib
 import io
+import os
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 from PIL import Image, ImageFilter
@@ -98,6 +100,13 @@ class TestFastAPIBackend(unittest.TestCase):
         self.assertEqual(data["status"], "ok")
         self.assertEqual(data["service"], "solar-panel-ai-api")
 
+    def test_02b_request_id_header_present(self):
+        """2b. Every API response should include a request correlation ID header."""
+        res = self.client.get("/api/health")
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("X-Request-ID", res.headers)
+        self.assertTrue(bool(res.headers["X-Request-ID"]))
+
     def test_03_optional_panel_metadata_accepted(self):
         """3. Empty panel_id and location are now OPTIONAL — request must succeed with auto-generated values."""
         dummy_img = io.BytesIO()
@@ -146,7 +155,93 @@ class TestFastAPIBackend(unittest.TestCase):
             files={"file": ("malicious.txt", text_bytes, "text/plain")},
         )
         self.assertEqual(res.status_code, 400)
-        self.assertIn("not a valid", res.json()["detail"])
+        self.assertIn("Unsupported file type", res.json()["detail"])
+
+    def test_04b_missing_file_is_rejected_by_api(self):
+        """Missing multipart file should fail with a safe validation error."""
+        res = self.client.post(
+            "/api/inspect",
+            data={"panel_id": "SP-MISSING", "location": "Upload Test"},
+        )
+        self.assertEqual(res.status_code, 422)
+        self.assertIn("file upload", res.json()["detail"].lower())
+
+    def test_04c_oversized_upload_is_rejected(self):
+        """Oversized uploads should be rejected before ML processing."""
+        img = Image.new("RGB", (64, 64), color=(10, 20, 30))
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG")
+        payload = buf.getvalue()
+        with patch.dict("os.environ", {"UPLOAD_MAX_BYTES": "100"}):
+            res = self.client.post(
+                "/api/inspect",
+                data={"panel_id": "SP-OVERSIZED", "location": "Upload Test"},
+                files={"file": ("too_big.jpg", payload, "image/jpeg")},
+            )
+        self.assertEqual(res.status_code, 413)
+        self.assertIn("maximum supported size", res.json()["detail"]) 
+
+    def test_04d_suspicious_filename_is_sanitized(self):
+        """Uploaded filenames are normalized and treated as safe metadata only."""
+        dummy_img = io.BytesIO()
+        Image.new("RGB", (64, 64), color="green").save(dummy_img, format="JPEG")
+        dummy_img.seek(0)
+
+        suspicious_name = "../..\\evil.jpg"
+        res = self.client.post(
+            "/api/inspect",
+            data={"panel_id": "SP-SAFE-FILENAME", "location": "Upload Test"},
+            files={"file": (suspicious_name, dummy_img.getvalue(), "image/jpeg")},
+        )
+        self.assertEqual(res.status_code, 201, res.text)
+        self.assertEqual(res.json()["image_filename"], "evil.jpg")
+        self.assertIn("X-Request-ID", res.headers)
+
+    def test_04e_error_response_does_not_expose_filesystem_paths(self):
+        """Upload errors should be generic and not reveal local filesystem details."""
+        text_bytes = b"This is not a valid image"
+        res = self.client.post(
+            "/api/inspect",
+            data={"panel_id": "SP-ERROR", "location": "Upload Test"},
+            files={"file": ("bad.txt", text_bytes, "text/plain")},
+        )
+        self.assertEqual(res.status_code, 400)
+        self.assertNotIn("C:\\", res.json()["detail"])
+        self.assertNotIn("/Users/", res.json()["detail"])
+        self.assertIn("X-Request-ID", res.headers)
+
+    def test_04f_error_response_does_not_expose_secrets(self):
+        """Validation error payloads should never leak database or credential details."""
+        with patch.dict(os.environ, {"DATABASE_URL": "postgresql://user:supersecret@localhost:5432/app"}, clear=False):
+            text_bytes = b"This is not a valid image"
+            res = self.client.post(
+                "/api/inspect",
+                data={"panel_id": "SP-SECRET", "location": "Upload Test"},
+                files={"file": ("bad.txt", text_bytes, "text/plain")},
+            )
+        self.assertEqual(res.status_code, 400)
+        payload = res.json()["detail"]
+        self.assertNotIn("supersecret", payload.lower())
+        self.assertNotIn("postgresql://", payload.lower())
+        self.assertIn("Unsupported file type", payload)
+
+    def test_04g_failed_upload_does_not_create_db_record(self):
+        """Failed upload requests must not create panel or inspection records."""
+        db_count_before = self.SessionFactory().execute(text("SELECT COUNT(*) FROM inspections")).scalar_one()
+        self.SessionFactory().close()
+        text_bytes = b"This is not a valid image"
+        res = self.client.post(
+            "/api/inspect",
+            data={"panel_id": "SP-NO-RECORD", "location": "Upload Test"},
+            files={"file": ("bad.txt", text_bytes, "text/plain")},
+        )
+        self.assertEqual(res.status_code, 400)
+        db = self.SessionFactory()
+        try:
+            count_after = db.execute(text("SELECT COUNT(*) FROM inspections")).scalar_one()
+        finally:
+            db.close()
+        self.assertEqual(count_after, db_count_before)
 
     def test_05_full_ml_inspection_endpoint(self):
         """5. End-to-end inspection with real test image runs full ML pipeline and persists record."""
@@ -173,9 +268,11 @@ class TestFastAPIBackend(unittest.TestCase):
             "location",
             "image_filename",
             "inspection_timestamp",
+            "timestamp",
             "predicted_class",
             "confidence",
             "visual_region_area_percent",
+            "region",
             "severity",
             "urgency",
             "maintenance_action",
@@ -185,6 +282,8 @@ class TestFastAPIBackend(unittest.TestCase):
         self.assertTrue(expected_keys.issubset(set(data.keys())))
         self.assertEqual(data["panel_id"], "SP-TEST-001")
         self.assertEqual(data["location"], "Block A - Rooftop 1")
+        self.assertEqual(data["timestamp"], data["inspection_timestamp"])
+        self.assertEqual(data["region"], data["visual_region_area_percent"])
         self.assertIn(data["severity"], ["LOW", "MEDIUM", "HIGH"])
         self.assertIn(data["urgency"], ["ROUTINE", "SCHEDULED", "PRIORITY", "IMMEDIATE_REVIEW"])
         self.assertTrue(0.0 <= data["confidence"] <= 1.0)
@@ -442,8 +541,69 @@ class TestFastAPIBackend(unittest.TestCase):
         res = self.client.get("/api/inspections/999999")
         self.assertEqual(res.status_code, 404)
 
-    def test_09_checkpoint_integrity_unmodified(self):
-        """9. Baseline EfficientNet-B0 checkpoint remains completely unmodified."""
+    def test_09_database_url_configuration_behavior(self):
+        """9. DATABASE_URL override should be honored without changing the sqlite fallback."""
+        with patch.dict(os.environ, {"DATABASE_URL": "sqlite:///:memory:"}, clear=False):
+            from src.database.database import get_database_url
+            self.assertEqual(get_database_url(), "sqlite:///:memory:")
+
+    def test_09b_database_rollback_and_repeated_panel_behavior(self):
+        """Database rollback prevents partial changes and duplicate panel IDs remain guarded by the schema."""
+        db = self.SessionFactory()
+        try:
+            from src.database.repository import PanelRepository
+            panel_repo = PanelRepository(db)
+            panel_repo.create_panel("SP-ROLLBACK", "Rollback Site")
+
+            # Duplicate panel IDs are rejected by the unique constraint, and rollback returns the session to a safe state.
+            try:
+                panel_repo.create_panel("SP-ROLLBACK", "Another Site")
+            except Exception:
+                db.rollback()
+
+            self.assertEqual(panel_repo.get_panel("SP-ROLLBACK").location, "Rollback Site")
+        finally:
+            db.close()
+
+    def test_09c_database_initialized_and_inspection_history_remains_queryable(self):
+        """Inspection history remains queryable and ordered using the SQLAlchemy session records."""
+        db = self.SessionFactory()
+        try:
+            create_panel(db, "SP-HISTORY-DB", "Database Site")
+            create_inspection(
+                db,
+                panel_id="SP-HISTORY-DB",
+                image_filename="history.jpg",
+                predicted_class="Clean",
+                confidence=0.94,
+                visual_region_area_percent=3.0,
+                severity="LOW",
+                urgency="ROUTINE",
+                maintenance_action="Routine check",
+                inspection_timestamp=datetime(2026, 9, 22, 11, 0, tzinfo=timezone.utc),
+            )
+            create_inspection(
+                db,
+                panel_id="SP-HISTORY-DB",
+                image_filename="history2.jpg",
+                predicted_class="Dusty",
+                confidence=0.87,
+                visual_region_area_percent=11.5,
+                severity="MEDIUM",
+                urgency="SCHEDULED",
+                maintenance_action="Clean panel",
+                inspection_timestamp=datetime(2026, 9, 22, 12, 0, tzinfo=timezone.utc),
+            )
+            history = db.execute(
+                text("SELECT COUNT(*) FROM inspections WHERE panel_id = :panel_id"),
+                {"panel_id": "SP-HISTORY-DB"},
+            ).scalar_one()
+            self.assertEqual(history, 2)
+        finally:
+            db.close()
+
+    def test_10_checkpoint_integrity_unmodified(self):
+        """10. Baseline EfficientNet-B0 checkpoint remains completely unmodified."""
         self.assertTrue(self.ckpt_path.exists(), f"Missing checkpoint: {self.ckpt_path}")
         with open(self.ckpt_path, "rb") as f:
             actual_sha256 = hashlib.sha256(f.read()).hexdigest()

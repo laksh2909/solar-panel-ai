@@ -3,7 +3,7 @@ Pydantic Schemas for FastAPI Solar Panel Inspection REST API.
 """
 
 from typing import List, Optional
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class HealthResponse(BaseModel):
@@ -29,7 +29,7 @@ class PanelListResponse(BaseModel):
 
 
 class InspectionResponse(BaseModel):
-    """Inspection record response matching the Phase 14 required schema."""
+    """Inspection record response with canonical fields and backward-compatible aliases."""
     model_config = ConfigDict(from_attributes=True)
 
     inspection_id: int
@@ -46,6 +46,15 @@ class InspectionResponse(BaseModel):
     maintenance_actions: List[str] = Field(default_factory=list)
     manual_inspection_recommended: bool
     confidence_warning: Optional[str] = None
+    timestamp: Optional[str] = None
+    region: Optional[float] = None
+
+    @model_validator(mode="after")
+    def sync_compatibility_aliases(self):
+        """Keep legacy aliases identical to their canonical counterpart."""
+        self.timestamp = self.inspection_timestamp
+        self.region = self.visual_region_area_percent
+        return self
 
 
 class InspectionListResponse(BaseModel):

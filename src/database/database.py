@@ -29,12 +29,11 @@ def get_database_url() -> str:
     If DATABASE_URL is set in .env or the environment, it is used.
     Otherwise, defaults to local SQLite development database (data/solar_panel_ai.db).
     """
-    env_url = os.getenv("DATABASE_URL")
+    env_url = (os.getenv("DATABASE_URL") or "").strip()
     if env_url:
         return env_url
     sqlite_db_path = project_root / "data" / "solar_panel_ai.db"
     return f"sqlite:///{sqlite_db_path.as_posix()}"
-
 
 
 def create_db_engine(url: Optional[str] = None, **kwargs) -> Engine:
@@ -42,13 +41,13 @@ def create_db_engine(url: Optional[str] = None, **kwargs) -> Engine:
     Creates and returns a SQLAlchemy Engine for the provided database URL.
     """
     db_url = url or get_database_url()
-    
-    # SQLite connection requires specific arguments for threading if used
+
+    # SQLite connection requires specific arguments for threading if used.
     engine_kwargs = {}
     if db_url.startswith("sqlite"):
-        engine_kwargs["connect_args"] = {"check_same_thread": False}
+        engine_kwargs["connect_args"] = {"check_same_thread": False, "timeout": 30}
     else:
-        # Standard connection pool tuning for PostgreSQL
+        # Standard connection pool tuning for PostgreSQL.
         engine_kwargs["pool_pre_ping"] = True
 
     engine_kwargs.update(kwargs)
@@ -82,11 +81,16 @@ def get_session_factory(engine: Optional[Engine] = None) -> sessionmaker:
 def get_db() -> Generator[Session, None, None]:
     """
     Dependency / context utility yielding a transactional database session.
+    Successful requests commit; failed requests roll back safely.
     """
     factory = get_session_factory()
     session: Session = factory()
     try:
         yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
     finally:
         session.close()
 

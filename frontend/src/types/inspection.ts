@@ -27,9 +27,11 @@ export interface InspectionResponse {
   location: string;
   image_filename: string;
   inspection_timestamp: string;
+  timestamp?: string;
   predicted_class: FaultType;
   confidence: number;
   visual_region_area_percent: number;
+  region?: number;
   severity: SeverityLevel;
   urgency: UrgencyLevel;
   maintenance_action: string;

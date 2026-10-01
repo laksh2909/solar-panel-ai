@@ -11,10 +11,18 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 import os
 from pathlib import Path
-from typing import List, Optional
+import re
+import time
+import uuid
+from typing import Any, List, Optional
 
-from fastapi import Depends, FastAPI, File, Form, HTTPException, Query, UploadFile, status
+from src.utils.config import get_project_root
+
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Query, Request, UploadFile, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 
@@ -44,6 +52,98 @@ from src.utils.logger import setup_logger
 
 logger = setup_logger("fastapi_main")
 recommender = MaintenanceRecommender()
+
+
+def _safe_error_detail(detail: Any, fallback: str = "The request could not be completed.") -> str:
+    """Normalize user-facing error messages without exposing internal stack traces or secrets."""
+    if isinstance(detail, list):
+        candidates = [item for item in detail if isinstance(item, dict)]
+        if candidates:
+            for item in candidates:
+                if isinstance(item.get("msg"), str) and item["msg"].strip():
+                    return item["msg"].strip()
+        return fallback
+    if isinstance(detail, dict):
+        detail_value = detail.get("detail")
+        return _safe_error_detail(detail_value, fallback)
+    text = str(detail or "").strip()
+    if not text:
+        return fallback
+    lowered = text.lower()
+    if "traceback" in lowered or "sqlalchemy" in lowered or "sqlite" in lowered:
+        return fallback
+    if re.search(r"(C:\\|/Users/|/home/|/tmp/|/var/)", text):
+        return fallback
+    if "password" in lowered or "secret" in lowered or "token" in lowered or "api_key" in lowered:
+        return fallback
+    return text
+
+
+def _get_upload_max_bytes() -> int:
+    """Maximum allowed upload size for the local prototype API."""
+    raw = os.getenv("UPLOAD_MAX_BYTES", "10485760")
+    try:
+        value = int(raw)
+        return max(1, value)
+    except (TypeError, ValueError):
+        return 10 * 1024 * 1024
+
+
+def _get_max_image_dimensions() -> int:
+    """Reject unexpectedly large image dimensions before they trigger expensive decode work."""
+    raw = os.getenv("MAX_IMAGE_DIMENSIONS", "12000")
+    try:
+        value = int(raw)
+        return max(256, value)
+    except (TypeError, ValueError):
+        return 12000
+
+
+def _get_cors_allowed_origins() -> List[str]:
+    """Read CORS origins from environment with local-development defaults for the prototype app."""
+    raw = os.getenv("CORS_ALLOWED_ORIGINS")
+    if raw:
+        values = [item.strip() for item in raw.split(",") if item.strip()]
+        if values:
+            return values
+    return [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ]
+
+
+def _safe_uploaded_filename(filename: Optional[str]) -> str:
+    """Normalize uploaded filenames so they remain metadata only and cannot become filesystem paths."""
+    candidate = (filename or "").strip()
+    if not candidate:
+        return "uploaded_panel.jpg"
+
+    normalized = candidate.replace("\\", "/")
+    safe_name = Path(normalized).name
+    if not safe_name or safe_name in {".", ".."}:
+        return "uploaded_panel.jpg"
+
+    sanitized = "".join(ch for ch in safe_name if ch not in {"\x00"})
+    sanitized = sanitized.strip()
+    if not sanitized:
+        return "uploaded_panel.jpg"
+    if len(sanitized) > 255:
+        sanitized = sanitized[:255]
+    return sanitized
+
+
+def _generate_request_id(provided_id: Optional[str] = None) -> str:
+    """Generate or reuse a safe correlation/request identifier."""
+    candidate = (provided_id or "").strip()
+    if candidate:
+        try:
+            uuid.UUID(candidate)
+            return candidate
+        except (TypeError, ValueError):
+            pass
+    return uuid.uuid4().hex
 
 
 def _response_maintenance_actions(
@@ -95,10 +195,142 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+@app.middleware("http")
+async def request_context_middleware(request: Request, call_next):
+    """Attach a request ID, log request lifecycle, and add the ID to the response headers."""
+    request_id = _generate_request_id(request.headers.get("X-Request-ID"))
+    request.state.request_id = request_id
+    started = time.perf_counter()
+
+    logger.info(
+        "API request received: method=%s path=%s request_id=%s",
+        request.method,
+        request.url.path,
+        request_id,
+    )
+
+    try:
+        response = await call_next(request)
+    except Exception:
+        duration_ms = round((time.perf_counter() - started) * 1000, 2)
+        logger.exception(
+            "API request failed: method=%s path=%s status=ERROR duration_ms=%s request_id=%s",
+            request.method,
+            request.url.path,
+            duration_ms,
+            request_id,
+        )
+        raise
+
+    duration_ms = round((time.perf_counter() - started) * 1000, 2)
+    response.headers["X-Request-ID"] = request_id
+    logger.info(
+        "API request completed: method=%s path=%s status=%s duration_ms=%s request_id=%s",
+        request.method,
+        request.url.path,
+        response.status_code,
+        duration_ms,
+        request_id,
+    )
+    return response
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    request_id = getattr(request.state, "request_id", _generate_request_id())
+    safe_detail = _safe_error_detail(exc.detail)
+    logger.warning(
+        "HTTP exception: method=%s path=%s status=%s detail=%s request_id=%s",
+        request.method,
+        request.url.path,
+        exc.status_code,
+        safe_detail,
+        request_id,
+    )
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": safe_detail},
+        headers={"X-Request-ID": request_id},
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def request_validation_exception_handler(request: Request, exc: RequestValidationError):
+    request_id = getattr(request.state, "request_id", _generate_request_id())
+    errors = exc.errors()
+    safe_detail = _safe_error_detail(errors, "A file upload is required.")
+    if any("file" in str(error.get("loc", [])) for error in errors):
+        safe_detail = "A file upload is required."
+    logger.warning(
+        "Request validation error: method=%s path=%s detail=%s request_id=%s",
+        request.method,
+        request.url.path,
+        safe_detail,
+        request_id,
+    )
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        content={"detail": safe_detail},
+        headers={"X-Request-ID": request_id},
+    )
+
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError):
+    request_id = getattr(request.state, "request_id", _generate_request_id())
+    safe_detail = _safe_error_detail(str(exc), "The uploaded image is invalid.")
+    logger.warning(
+        "Validation error: method=%s path=%s detail=%s request_id=%s",
+        request.method,
+        request.url.path,
+        safe_detail,
+        request_id,
+    )
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": safe_detail},
+        headers={"X-Request-ID": request_id},
+    )
+
+
+@app.exception_handler(SQLAlchemyError)
+async def db_exception_handler(request: Request, exc: SQLAlchemyError):
+    request_id = getattr(request.state, "request_id", _generate_request_id())
+    logger.error(
+        "Database error: method=%s path=%s request_id=%s",
+        request.method,
+        request.url.path,
+        request_id,
+        exc_info=True,
+    )
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "A database error occurred while processing this request."},
+        headers={"X-Request-ID": request_id},
+    )
+
+
+@app.exception_handler(Exception)
+async def generic_exception_handler(request: Request, exc: Exception):
+    request_id = getattr(request.state, "request_id", _generate_request_id())
+    logger.exception(
+        "Unexpected server error: method=%s path=%s request_id=%s",
+        request.method,
+        request.url.path,
+        request_id,
+    )
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "An unexpected internal server error occurred. Please try again."},
+        headers={"X-Request-ID": request_id},
+    )
+
+
 # Enable CORS for future frontend integration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_get_cors_allowed_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -129,11 +361,11 @@ def get_health():
     tags=["Inspection"],
 )
 async def inspect_panel(
+    request: Request,
     file: UploadFile = File(..., description="Solar panel image (JPEG, PNG, WEBP, BMP)"),
     panel_id: str = Form(default="", description="Optional panel identifier (e.g. SP-HYD-001). Auto-generated if omitted."),
     location: str = Form(default="", description="Optional facility site or array location description"),
     db: Session = Depends(get_db),
-
 ):
     """
     Performs visual inspection on an uploaded panel image:
@@ -146,23 +378,91 @@ async def inspect_panel(
     If panel_id is not provided, an AUTO-NNN identifier is generated automatically.
     If location is not provided, 'Location not specified' is used as the fallback.
     """
+    request_id = getattr(request.state, "request_id", _generate_request_id())
+    safe_filename = _safe_uploaded_filename(file.filename)
+    logger.info(
+        "Inspection request received: request_id=%s panel_id=%s location=%s filename=%s",
+        request_id,
+        panel_id or "",
+        location or "",
+        safe_filename,
+    )
+
     # 1. Optional metadata handling
     stripped_id = (panel_id or "").strip()
     stripped_loc = (location or "").strip() or "Location not specified"
+
+    if not file.filename:
+        logger.warning(
+            "Upload validation failed: request_id=%s reason=%s",
+            request_id,
+            "Uploaded file is missing a valid filename.",
+        )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploaded file is missing a valid filename.",
+        )
+
+    if not file.content_type:
+        content_type = ""
+    else:
+        content_type = file.content_type.lower()
+    if content_type and not content_type.startswith("image/"):
+        logger.warning(
+            "Upload validation failed: request_id=%s reason=%s",
+            request_id,
+            "Unsupported file type.",
+        )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unsupported file type. Upload a valid image.",
+        )
 
     # 2. Read and validate the uploaded image before any DB or inference work
     try:
         image_bytes = await file.read()
     except Exception:
+        logger.warning(
+            "Upload processing failed: request_id=%s reason=%s",
+            request_id,
+            "Uploaded image could not be processed.",
+        )
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Image could not be read.",
+            detail="Uploaded image could not be processed.",
+        )
+
+    if not image_bytes:
+        logger.warning(
+            "Upload validation failed: request_id=%s reason=%s",
+            request_id,
+            "Uploaded file is empty.",
+        )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploaded file is empty.",
+        )
+
+    if len(image_bytes) > _get_upload_max_bytes():
+        logger.warning(
+            "Upload validation failed: request_id=%s reason=%s",
+            request_id,
+            "Image exceeds upload size limit.",
+        )
+        raise HTTPException(
+            status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+            detail="Uploaded image exceeds the maximum supported size.",
         )
 
     service = InspectionService.get_instance()
     try:
         service.validate_image_quality(image_bytes)
     except ValueError as e:
+        logger.warning(
+            "Image quality validation failed: request_id=%s reason=%s",
+            request_id,
+            str(e),
+        )
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
@@ -186,10 +486,16 @@ async def inspect_panel(
 
     # 4. Execute ML diagnostic pipeline
     try:
-        filename = file.filename or "uploaded_panel.jpg"
+        filename = safe_filename
         diag = service.run_inspection(image_bytes=image_bytes, filename=filename)
     except Exception as e:
-        logger.error(f"Inference execution failed: {e}", exc_info=True)
+        logger.error(
+            "Inference execution failed: request_id=%s panel_id=%s error=%s",
+            request_id,
+            stripped_id,
+            str(e),
+            exc_info=True,
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred during AI visual inspection processing.",
@@ -199,24 +505,60 @@ async def inspect_panel(
     panel_repo = PanelRepository(db)
     panel = panel_repo.get_panel(stripped_id)
     if not panel:
-        panel = panel_repo.create_panel(panel_id=stripped_id, location=stripped_loc)
+        try:
+            panel = panel_repo.create_panel(panel_id=stripped_id, location=stripped_loc)
+        except (ValueError, SQLAlchemyError) as e:
+            logger.error(
+                "Panel persistence failed: request_id=%s panel_id=%s error=%s",
+                request_id,
+                stripped_id,
+                str(e),
+                exc_info=True,
+            )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Panel metadata could not be saved.",
+            )
 
     # 5. Persist Inspection record
     insp_repo = InspectionRepository(db)
     ts_val = datetime.fromisoformat(diag["inspection_timestamp"])
-    inspection = insp_repo.create_inspection(
-        panel_id=panel.panel_id,
-        image_filename=diag["image_filename"],
-        predicted_class=diag["predicted_class"],
-        confidence=diag["confidence"],
-        visual_region_area_percent=diag["visual_region_area_percent"],
-        severity=diag["severity"],
-        urgency=diag["urgency"],
-        maintenance_action=diag["maintenance_action"],
-        inspection_timestamp=ts_val,
-        true_class=None,
-        manual_inspection_recommended=diag["manual_inspection_recommended"],
-        confidence_warning=diag["confidence_warning"],
+    try:
+        inspection = insp_repo.create_inspection(
+            panel_id=panel.panel_id,
+            image_filename=diag["image_filename"],
+            predicted_class=diag["predicted_class"],
+            confidence=diag["confidence"],
+            visual_region_area_percent=diag["visual_region_area_percent"],
+            severity=diag["severity"],
+            urgency=diag["urgency"],
+            maintenance_action=diag["maintenance_action"],
+            inspection_timestamp=ts_val,
+            true_class=None,
+            manual_inspection_recommended=diag["manual_inspection_recommended"],
+            confidence_warning=diag["confidence_warning"],
+        )
+    except (ValueError, SQLAlchemyError) as e:
+        logger.error(
+            "Inspection persistence failed: request_id=%s panel_id=%s error=%s",
+            request_id,
+            panel.panel_id,
+            str(e),
+            exc_info=True,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Inspection could not be persisted to storage.",
+        )
+
+    logger.info(
+        "Inspection completed: request_id=%s inspection_id=%s panel_id=%s predicted_class=%s confidence=%s severity=%s",
+        request_id,
+        inspection.id,
+        inspection.panel_id,
+        inspection.predicted_class,
+        inspection.confidence,
+        inspection.severity,
     )
 
     return InspectionResponse(
@@ -234,6 +576,8 @@ async def inspect_panel(
         maintenance_actions=diag["maintenance_actions"],
         manual_inspection_recommended=inspection.manual_inspection_recommended,
         confidence_warning=inspection.confidence_warning,
+        timestamp=inspection.inspection_timestamp.isoformat(),
+        region=inspection.visual_region_area_percent,
     )
 
 
@@ -328,6 +672,8 @@ def get_panel_inspections(
             ),
             manual_inspection_recommended=i.manual_inspection_recommended,
             confidence_warning=i.confidence_warning,
+            timestamp=i.inspection_timestamp.isoformat(),
+            region=i.visual_region_area_percent,
         )
         for i in inspections
     ]
@@ -428,4 +774,6 @@ def get_inspection_by_id(
         ),
         manual_inspection_recommended=insp.manual_inspection_recommended,
         confidence_warning=insp.confidence_warning,
+        timestamp=insp.inspection_timestamp.isoformat(),
+        region=insp.visual_region_area_percent,
     )

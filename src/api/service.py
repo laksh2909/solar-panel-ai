@@ -34,6 +34,7 @@ logger = setup_logger("api_inspection_service")
 EXPECTED_CHECKPOINT_SHA256 = "07890dc9964f5162b53ed4c80778ef147c01b977e8bce76d0a15b09c4733fa1e"
 ALLOWED_IMAGE_FORMATS = {"JPEG", "PNG", "WEBP", "BMP"}
 MIN_RESOLUTION_SHORT_EDGE = 32
+MAX_IMAGE_DIMENSIONS = int(os.getenv("MAX_IMAGE_DIMENSIONS", "12000"))
 BLUR_LAPLACIAN_VARIANCE_THRESHOLD = 50.0
 DARKNESS_MEAN_LUMINANCE_THRESHOLD = 25.0
 BRIGHTNESS_MEAN_LUMINANCE_THRESHOLD = 245.0
@@ -129,6 +130,8 @@ class InspectionService:
         rgb_array, _ = self.validate_and_decode_image(image_bytes)
 
         height, width = rgb_array.shape[:2]
+        if height > MAX_IMAGE_DIMENSIONS or width > MAX_IMAGE_DIMENSIONS:
+            raise ValueError("Image dimensions exceed the supported maximum size for inspection.")
         short_edge = min(height, width)
         if short_edge < MIN_RESOLUTION_SHORT_EDGE:
             raise ValueError("Image resolution is too low for reliable inspection.")

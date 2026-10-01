@@ -21,6 +21,7 @@ def setup_logger(name: str = "solar_ai", log_file: Path | str | None = None, lev
     """
     logger = logging.getLogger(name)
     logger.setLevel(level)
+    logger.propagate = False
 
     # Avoid duplicate handlers if setup is called multiple times
     if logger.handlers:
